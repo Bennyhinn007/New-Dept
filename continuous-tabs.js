@@ -89,8 +89,8 @@
     updatePill(targetTab, animate = true) {
       if (!targetTab || !this.pill) return;
 
-      // On mobile viewports for header nav, let standard drawer styles handle states
-      if (this.isHeaderNav && window.innerWidth <= 768) {
+      // On mobile viewports (<= 768px), direct CSS active styling handles tab states cleanly
+      if (window.innerWidth <= 768) {
         this.pill.style.opacity = '0';
         return;
       }
