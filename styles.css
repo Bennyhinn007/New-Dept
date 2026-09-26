@@ -262,6 +262,64 @@ header {
   animation: pulseAnimation 2s infinite;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Mobile Navigation Toggle Button (Hidden on desktop) */
+.mobile-nav-toggle {
+  display: none;
+  background: rgba(22, 38, 46, 0.85);
+  border: 1.5px solid var(--color-coral-red);
+  border-radius: var(--radius-sm);
+  width: 42px;
+  height: 42px;
+  padding: 8px;
+  cursor: pointer;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 4px 14px rgba(230, 72, 51, 0.35);
+  transition: all var(--transition-fast);
+  z-index: 105;
+}
+
+.mobile-nav-toggle:hover {
+  background: var(--color-deep-teal);
+  transform: scale(1.05);
+}
+
+.mobile-nav-toggle .hamburger-line {
+  display: block;
+  width: 22px;
+  height: 2.2px;
+  background-color: var(--color-warm-cream);
+  border-radius: 2px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center;
+}
+
+.mobile-nav-toggle.active .hamburger-line:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+  background-color: var(--color-coral-red);
+}
+
+.mobile-nav-toggle.active .hamburger-line:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.mobile-nav-toggle.active .hamburger-line:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+  background-color: var(--color-coral-red);
+}
+
+.mobile-drawer-footer {
+  display: none;
+}
+
 /* ==========================================================================
    CONTINUOUS TABS SECTION (Watermelon UI Specification)
    ========================================================================== */
@@ -854,25 +912,515 @@ footer p {
 }
 
 /* ==========================================================================
-   RESPONSIVE QUERIES
+   RESPONSIVE TABLES & MOBILE UTILITIES
    ========================================================================== */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 1.25rem 0;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-muted-sage-border);
+  background: rgba(10, 18, 24, 0.85);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-muted-sage-border) transparent;
+}
+
+.table-responsive::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: rgba(10, 18, 24, 0.6);
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: var(--color-muted-sage-border);
+  border-radius: 3px;
+}
+
+.table-responsive table.data-table {
+  margin: 0;
+  border: none;
+}
+
+.table-scroll-hint {
+  display: none;
+}
+
+@keyframes slideDownNav {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE QUERIES & MOBILE VIEWPORT PERFECTION
+   ========================================================================== */
+@media (max-width: 900px) {
+  .header-brand h1 {
+    font-size: 1.05rem;
+  }
+  .header-brand h2 {
+    font-size: 0.85rem;
+  }
+  .continuous-tab-item, nav a {
+    padding: 6px 12px;
+    font-size: 0.82rem;
+  }
+}
+
 @media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  .container {
+    width: 92%;
+    padding: 0 4px;
+  }
+
+  /* Compact Sleek Header Bar */
+  header {
+    padding: 0.65rem 0;
+  }
+
   .header-top {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  nav ul {
-    flex-direction: column;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
     width: 100%;
   }
-  nav a {
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .brand-logo-img {
+    height: 40px;
+    max-width: 44px;
+    flex-shrink: 0;
+  }
+
+  .header-brand div {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .header-brand h1 {
+    font-size: 0.88rem;
+    font-weight: 800;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+    color: var(--color-warm-cream);
+  }
+
+  .header-brand h2 {
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.25;
+    margin: 2px 0 0;
+    color: var(--color-muted-sage);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .header-badge {
+    display: none !important; /* Conceal in top bar, presented cleanly inside drawer */
+  }
+
+  .mobile-nav-toggle {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  /* Collapsible Frosted Glass Mobile Nav Drawer */
+  nav {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(8, 14, 18, 0.98);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border-bottom: 2px solid var(--color-coral-red);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.85);
+    margin: 0;
+    padding: 0 1rem;
+    max-height: 0;
+    opacity: 0;
+    visibility: hidden;
+    overflow: hidden;
+    transition: max-height 320ms cubic-bezier(0.16, 1, 0.3, 1), opacity 240ms ease, visibility 240ms ease, padding 320ms ease;
+    z-index: 99;
+    border-top: 1px solid var(--color-muted-sage-border);
+  }
+
+  header.nav-open nav {
+    max-height: 560px;
+    opacity: 1;
+    visibility: visible;
+    padding: 1rem 1rem 1.5rem;
+    animation: slideDownNav 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .continuous-tabs-track, nav ul {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 6px;
+    border-radius: var(--radius-sm);
+    background: rgba(16, 28, 35, 0.7);
+    border: 1px solid var(--color-muted-sage-border);
+    padding: 8px;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+
+  nav ul li {
+    display: block;
     width: 100%;
   }
-  .grid-2, .grid-3 {
-    grid-template-columns: 1fr;
+
+  .continuous-tab-item, nav a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 11px 16px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    border-radius: var(--radius-xs);
+    background: transparent !important;
+    color: var(--color-warm-cream);
+    text-align: left;
+    border: 1px solid transparent !important;
+    transition: all var(--transition-fast);
   }
+
+  nav a::after {
+    content: "›";
+    font-size: 1.2rem;
+    opacity: 0.5;
+    transition: transform var(--transition-fast), opacity var(--transition-fast);
+  }
+
+  nav a:hover, nav a.active {
+    background: rgba(36, 72, 85, 0.8) !important;
+    border-color: var(--color-coral-red) !important;
+    color: #FFFFFF !important;
+  }
+
+  nav a.active::after {
+    content: "●";
+    font-size: 0.65rem;
+    color: var(--color-coral-red);
+    opacity: 1;
+  }
+
+  header nav .continuous-tabs-pill {
+    display: none !important;
+  }
+
+  .mobile-drawer-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(144, 174, 173, 0.25);
+  }
+
+  .mobile-drawer-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(36, 72, 85, 0.45);
+    border: 1px solid var(--color-muted-sage-border);
+    color: var(--color-warm-cream);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: var(--radius-full);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  /* In-Page Continuous Tabs (Touch-Scrollable Pill Strip) */
+  .continuous-tabs-section {
+    margin: 1.25rem 0 1.5rem;
+    text-align: center;
+  }
+
+  .tabs-lead-badge {
+    font-size: 0.72rem;
+    padding: 3px 10px;
+    margin-bottom: 0.4rem;
+  }
+
+  .tabs-lead-title {
+    font-size: 1.08rem;
+    margin-bottom: 0.75rem;
+    padding: 0 8px;
+  }
+
+  .continuous-tabs-container {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 6px 4px 14px;
+    scroll-snap-type: x proximity;
+  }
+
+  .continuous-tabs-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .continuous-tabs-container .continuous-tabs-track {
+    display: inline-flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    width: auto !important;
+    margin: 0 auto;
+    background: linear-gradient(180deg, rgba(22, 38, 46, 0.9) 0%, rgba(10, 18, 24, 0.98) 100%);
+    border: 1px solid rgba(144, 174, 173, 0.35);
+    padding: 4px;
+    border-radius: var(--radius-full);
+  }
+
+  .continuous-tabs-container .continuous-tab-item {
+    scroll-snap-align: center;
+    flex-shrink: 0;
+    font-size: 0.78rem;
+    padding: 6px 13px;
+    white-space: nowrap;
+    border: none !important;
+    background: transparent !important;
+  }
+
+  .continuous-tabs-container .continuous-tabs-pill {
+    display: block !important;
+  }
+
+  /* Tables & Mobile Horizontal Scrolling */
+  .table-scroll-hint {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    font-size: 0.72rem;
+    color: var(--color-muted-sage);
+    margin-bottom: 6px;
+    font-style: italic;
+  }
+
+  table.data-table {
+    min-width: 520px;
+    margin: 0;
+  }
+
+  table.data-table th, 
+  table.data-table td {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
+
+  table.data-table th {
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  /* Page Hero on Mobile */
+  .page-hero {
+    padding: 2rem 0 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .page-hero .hero-inner {
+    text-align: left;
+  }
+
   .page-hero h2 {
-    font-size: 1.6rem;
+    font-size: 1.45rem;
+    line-height: 1.25;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-hero p {
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .hero-tag {
+    font-size: 0.72rem;
+    padding: 3px 10px;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Section Blocks */
+  .section-block {
+    padding: 1.25rem 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .section-block h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-block h4 {
+    font-size: 1.02rem;
+    margin-top: 1rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .section-block p, 
+  .section-block li {
+    font-size: 0.88rem;
+    line-height: 1.55;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Grids and Cards */
+  .grid-2, 
+  .grid-3 {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .item-card {
+    padding: 1rem;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .item-card h4 {
+    font-size: 1.05rem;
+  }
+
+  .item-card p {
+    font-size: 0.86rem;
+  }
+
+  .item-card a {
+    word-break: break-all;
+  }
+
+  /* Images & Galleries */
+  .image-gallery {
+    flex-direction: column;
+    gap: 0.85rem;
+    margin: 1rem 0;
+  }
+
+  .event-image, 
+  .banner-image, 
+  .content-image {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto;
+  }
+
+  .logo-image {
+    max-height: 65px;
+  }
+
+  /* Footer */
+  footer {
+    padding: 1.75rem 0;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .footer-logo {
+    height: 38px;
+  }
+
+  footer p {
+    font-size: 0.78rem;
+    line-height: 1.55;
+  }
+
+  /* Singularity Dock */
+  .singularity-dock {
+    bottom: 12px;
+    right: 12px;
+  }
+
+  .singularity-dock-trigger {
+    padding: 6px 12px;
+    font-size: 0.74rem;
+  }
+
+  .singularity-dock-panel {
+    width: calc(100vw - 24px);
+    max-width: 290px;
+    right: 0;
+    bottom: calc(100% + 8px);
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-brand h1 {
+    font-size: 0.82rem;
+  }
+
+  .header-brand h2 {
+    font-size: 0.68rem;
+  }
+
+  .brand-logo-img {
+    height: 34px;
+    max-width: 38px;
+  }
+
+  .mobile-nav-toggle {
+    width: 38px;
+    height: 38px;
+    padding: 7px;
+  }
+
+  .page-hero h2 {
+    font-size: 1.3rem;
+  }
+
+  .section-block {
+    padding: 1rem 0.85rem;
+  }
+
+  .item-card {
+    padding: 0.9rem;
   }
 }
 

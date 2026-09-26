@@ -23,9 +23,16 @@
             <h2>Department of CSE (IoT and Cybersecurity Including Blockchain Technology)</h2>
           </div>
         </div>
-        <div class="header-badge">
-          <span class="pulse-dot"></span>
-          <span>NAAC A+ &bull; VTU & AICTE Approved</span>
+        <div class="header-actions">
+          <div class="header-badge">
+            <span class="pulse-dot"></span>
+            <span>NAAC A+ &bull; VTU & AICTE Approved</span>
+          </div>
+          <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+          </button>
         </div>
       </div>
 
@@ -39,6 +46,12 @@
           <li><a href="association.html">Association</a></li>
           <li><a href="contact.html">Contact</a></li>
         </ul>
+        <div class="mobile-drawer-footer">
+          <div class="mobile-drawer-badge">
+            <span class="pulse-dot"></span>
+            <span>NAAC A+ &bull; VTU & AICTE Approved</span>
+          </div>
+        </div>
       </nav>
     </div>
   </header>
@@ -83,48 +96,51 @@
         </div>
 
         <h4>List of Certified Ethical Hacker Students</h4>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th style="width: 50px;">No.</th>
-              <th>Student Name</th>
-              <th>Certification</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>1</td><td>Pratiksha Bande</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>2</td><td>Priyanka Ratkale</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>3</td><td>Benny Hinn</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>4</td><td>Neha Biradar</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>5</td><td>Sonali Kondapure</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>6</td><td>Aashish Malage</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>7</td><td>Mohammed Ali</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>8</td><td>Srusti Agre</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>9</td><td>Mohd Ayaan</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>10</td><td>Adiba Unwaan</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>11</td><td>Khadija Moiz</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>12</td><td>Md Parvez</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>13</td><td>Rishikesh Auradkar</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>14</td><td>Rohan Jadhav</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>15</td><td>Varsha Talwar</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>16</td><td>Harish Joshi</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>17</td><td>Radifa Khanam</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>18</td><td>Aishwarya Prabha</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>19</td><td>Akash Ladde</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>20</td><td>Sarvesh Biradar</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>21</td><td>Shaik Riyan</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>22</td><td>Sharanambe Reddy</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>23</td><td>Darshana Patil</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>24</td><td>Rajeev Kulkarni</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>25</td><td>Rashmi Sharma</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>26</td><td>Nisaa Fatima</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>27</td><td>Jothiraditya Patil</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>28</td><td>Zainab Roshan</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>29</td><td>Rajrajeshwari Dani</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>30</td><td>Sagar Bidarkar</td><td>Certified Ethical Hacker (CEH)</td></tr>
-            <tr><td>31</td><td>Akshatak Kandgule</td><td>Certified Ethical Hacker (CEH)</td></tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <div class="table-scroll-hint"><span>Swipe to view full table &rarr;</span></div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 50px;">No.</th>
+                <th>Student Name</th>
+                <th>Certification</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>Pratiksha Bande</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>2</td><td>Priyanka Ratkale</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>3</td><td>Benny Hinn</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>4</td><td>Neha Biradar</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>5</td><td>Sonali Kondapure</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>6</td><td>Aashish Malage</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>7</td><td>Mohammed Ali</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>8</td><td>Srusti Agre</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>9</td><td>Mohd Ayaan</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>10</td><td>Adiba Unwaan</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>11</td><td>Khadija Moiz</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>12</td><td>Md Parvez</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>13</td><td>Rishikesh Auradkar</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>14</td><td>Rohan Jadhav</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>15</td><td>Varsha Talwar</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>16</td><td>Harish Joshi</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>17</td><td>Radifa Khanam</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>18</td><td>Aishwarya Prabha</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>19</td><td>Akash Ladde</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>20</td><td>Sarvesh Biradar</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>21</td><td>Shaik Riyan</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>22</td><td>Sharanambe Reddy</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>23</td><td>Darshana Patil</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>24</td><td>Rajeev Kulkarni</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>25</td><td>Rashmi Sharma</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>26</td><td>Nisaa Fatima</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>27</td><td>Jothiraditya Patil</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>28</td><td>Zainab Roshan</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>29</td><td>Rajrajeshwari Dani</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>30</td><td>Sagar Bidarkar</td><td>Certified Ethical Hacker (CEH)</td></tr>
+              <tr><td>31</td><td>Akshatak Kandgule</td><td>Certified Ethical Hacker (CEH)</td></tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <!-- 2. Third Semester Toppers 2023 Batch -->
@@ -136,54 +152,57 @@
           <img src="images/toppers_sem3_banner.jpg" alt="III Semester Toppers - VTU Examinations 2025" class="banner-image">
         </div>
 
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Student Name</th>
-              <th>USN</th>
-              <th>Marks Secured</th>
-              <th>Percentage</th>
-              <th>VTU Rank</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Rishikesh Auradkar</td>
-              <td>3GN23IC041</td>
-              <td>828/900</td>
-              <td>92%</td>
-              <td>VTU Rank - 4th</td>
-            </tr>
-            <tr>
-              <td>Adiba Parveen</td>
-              <td>3GN23IC002</td>
-              <td>815/900</td>
-              <td>90.5%</td>
-              <td>VTU Rank - 12th</td>
-            </tr>
-            <tr>
-              <td>Md Saglain Parvez</td>
-              <td>3GN23IC020</td>
-              <td>807/900</td>
-              <td>89.6%</td>
-              <td>VTU Rank - 18th</td>
-            </tr>
-            <tr>
-              <td>Benny Hinn</td>
-              <td>3GN23IC014</td>
-              <td>801/900</td>
-              <td>89%</td>
-              <td>VTU Rank - 21st</td>
-            </tr>
-            <tr>
-              <td>Mohd Ayaan</td>
-              <td>3GN23IC028</td>
-              <td>800/900</td>
-              <td>88.88%</td>
-              <td>VTU Rank - 22nd</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <div class="table-scroll-hint"><span>Swipe to view full table &rarr;</span></div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Student Name</th>
+                <th>USN</th>
+                <th>Marks Secured</th>
+                <th>Percentage</th>
+                <th>VTU Rank</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Rishikesh Auradkar</td>
+                <td>3GN23IC041</td>
+                <td>828/900</td>
+                <td>92%</td>
+                <td>VTU Rank - 4th</td>
+              </tr>
+              <tr>
+                <td>Adiba Parveen</td>
+                <td>3GN23IC002</td>
+                <td>815/900</td>
+                <td>90.5%</td>
+                <td>VTU Rank - 12th</td>
+              </tr>
+              <tr>
+                <td>Md Saglain Parvez</td>
+                <td>3GN23IC020</td>
+                <td>807/900</td>
+                <td>89.6%</td>
+                <td>VTU Rank - 18th</td>
+              </tr>
+              <tr>
+                <td>Benny Hinn</td>
+                <td>3GN23IC014</td>
+                <td>801/900</td>
+                <td>89%</td>
+                <td>VTU Rank - 21st</td>
+              </tr>
+              <tr>
+                <td>Mohd Ayaan</td>
+                <td>3GN23IC028</td>
+                <td>800/900</td>
+                <td>88.88%</td>
+                <td>VTU Rank - 22nd</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <!-- 3. Fourth Semester Toppers 2023 Batch -->
@@ -228,36 +247,39 @@
           <img src="images/toppers_sem6_banner.jpg" alt="Top Performers in VI SEM - GNDEC Bidar" class="banner-image">
         </div>
 
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Position</th>
-              <th>Student Name</th>
-              <th>USN</th>
-              <th>Percentage</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1st Rank</td>
-              <td>Rishikesh Auradkar</td>
-              <td>3GN23IC041</td>
-              <td>92.71%</td>
-            </tr>
-            <tr>
-              <td>2nd Rank</td>
-              <td>Adiba Parveen</td>
-              <td>3GN23IC002</td>
-              <td>91.14%</td>
-            </tr>
-            <tr>
-              <td>3rd Rank</td>
-              <td>Bennyhinn</td>
-              <td>3GN23IC014</td>
-              <td>89.71%</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <div class="table-scroll-hint"><span>Swipe to view full table &rarr;</span></div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Position</th>
+                <th>Student Name</th>
+                <th>USN</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1st Rank</td>
+                <td>Rishikesh Auradkar</td>
+                <td>3GN23IC041</td>
+                <td>92.71%</td>
+              </tr>
+              <tr>
+                <td>2nd Rank</td>
+                <td>Adiba Parveen</td>
+                <td>3GN23IC002</td>
+                <td>91.14%</td>
+              </tr>
+              <tr>
+                <td>3rd Rank</td>
+                <td>Bennyhinn</td>
+                <td>3GN23IC014</td>
+                <td>89.71%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <!-- 6. Participation in BGS CET 24-Hour National-Level Hackathon -->
@@ -265,34 +287,37 @@
         <h3>6. Participation in BGS CET 24-Hour National-Level Hackathon</h3>
         <p>Students from the sixth semester represented the department at the BGS CET 24-Hour National-Level Hackathon held in Bengaluru. The event provided students with an opportunity to work intensively on innovative solutions, collaborate as a team, apply their technical knowledge, and experience a competitive national-level hackathon environment.</p>
 
-        <table class="data-table">
-          <tbody>
-            <tr>
-              <th style="width: 180px;">Event Name</th>
-              <td>Advaya 2.0</td>
-            </tr>
-            <tr>
-              <th>Date</th>
-              <td>1st and 2nd April 2026</td>
-            </tr>
-            <tr>
-              <th>Duration</th>
-              <td>24 Hours</td>
-            </tr>
-            <tr>
-              <th>Location</th>
-              <td>BGS College of Engineering and Technology, Bengaluru</td>
-            </tr>
-            <tr>
-              <th>Theme</th>
-              <td>Cybersecurity</td>
-            </tr>
-            <tr>
-              <th>Project Scope</th>
-              <td>All participating teams worked on projects centered around cybersecurity, addressing modern challenges in digital security and data protection.</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <div class="table-scroll-hint"><span>Swipe to view details &rarr;</span></div>
+          <table class="data-table">
+            <tbody>
+              <tr>
+                <th style="width: 180px;">Event Name</th>
+                <td>Advaya 2.0</td>
+              </tr>
+              <tr>
+                <th>Date</th>
+                <td>1st and 2nd April 2026</td>
+              </tr>
+              <tr>
+                <th>Duration</th>
+                <td>24 Hours</td>
+              </tr>
+              <tr>
+                <th>Location</th>
+                <td>BGS College of Engineering and Technology, Bengaluru</td>
+              </tr>
+              <tr>
+                <th>Theme</th>
+                <td>Cybersecurity</td>
+              </tr>
+              <tr>
+                <th>Project Scope</th>
+                <td>All participating teams worked on projects centered around cybersecurity, addressing modern challenges in digital security and data protection.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <h4>Participating Students</h4>
         <ol>

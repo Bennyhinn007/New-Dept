@@ -23,9 +23,16 @@
             <h2>Department of CSE (IoT and Cybersecurity Including Blockchain Technology)</h2>
           </div>
         </div>
-        <div class="header-badge">
-          <span class="pulse-dot"></span>
-          <span>NAAC A+ &bull; VTU & AICTE Approved</span>
+        <div class="header-actions">
+          <div class="header-badge">
+            <span class="pulse-dot"></span>
+            <span>NAAC A+ &bull; VTU & AICTE Approved</span>
+          </div>
+          <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+          </button>
         </div>
       </div>
 
@@ -39,6 +46,12 @@
           <li><a href="association.html">Association</a></li>
           <li><a href="contact.html">Contact</a></li>
         </ul>
+        <div class="mobile-drawer-footer">
+          <div class="mobile-drawer-badge">
+            <span class="pulse-dot"></span>
+            <span>NAAC A+ &bull; VTU & AICTE Approved</span>
+          </div>
+        </div>
       </nav>
     </div>
   </header>
@@ -75,96 +88,99 @@
         <h3>Faculty Directory Table</h3>
         <p>Complete official directory of teaching faculty and instructors in the department:</p>
 
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th style="width: 50px;">Sl. No.</th>
-              <th>Faculty Name</th>
-              <th>Designation</th>
-              <th>Qualification</th>
-              <th>Experience</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td><strong>Dr. Harish Joshi</strong></td>
-              <td>Professor & HOD</td>
-              <td>Ph.D</td>
-              <td>15 Years</td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td><strong>Madhuri Joshi</strong></td>
-              <td>Assistant Professor</td>
-              <td>M.Tech</td>
-              <td>2 Years</td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td><strong>Miss. Uzma Kausar</strong></td>
-              <td>Assistant Professor</td>
-              <td>M.Tech</td>
-              <td>2 Years</td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td><strong>Mr. Ashok Bawge</strong></td>
-              <td>Assistant Professor</td>
-              <td>M.Tech</td>
-              <td>9 Years</td>
-            </tr>
-            <tr>
-              <td>5</td>
-              <td><strong>Mr. Mahesh</strong></td>
-              <td>Assistant Professor</td>
-              <td>M.Tech</td>
-              <td>&mdash;</td>
-            </tr>
-            <tr>
-              <td>6</td>
-              <td><strong>Mr. Pandit Patil</strong></td>
-              <td>Assistant Professor</td>
-              <td>M.Tech</td>
-              <td>&mdash;</td>
-            </tr>
-            <tr>
-              <td>7</td>
-              <td><strong>Mrs. Ibtesham Zarrine</strong></td>
-              <td>Assistant Professor</td>
-              <td>M.Tech</td>
-              <td>&mdash;</td>
-            </tr>
-            <tr>
-              <td>8</td>
-              <td><strong>Miss Farhanaaz</strong></td>
-              <td>Assistant Professor</td>
-              <td>M.Tech</td>
-              <td>&mdash;</td>
-            </tr>
-            <tr>
-              <td>9</td>
-              <td><strong>Arati</strong></td>
-              <td>Assistant Professor</td>
-              <td>M.Tech</td>
-              <td>&mdash;</td>
-            </tr>
-            <tr>
-              <td>10</td>
-              <td><strong>Anand</strong></td>
-              <td>Assistant Professor</td>
-              <td>M.Tech</td>
-              <td>&mdash;</td>
-            </tr>
-            <tr>
-              <td>11</td>
-              <td><strong>Miss Preeti</strong></td>
-              <td>Instructor</td>
-              <td>&mdash;</td>
-              <td>&mdash;</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <div class="table-scroll-hint"><span>Swipe horizontally to view full table &rarr;</span></div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 50px;">Sl. No.</th>
+                <th>Faculty Name</th>
+                <th>Designation</th>
+                <th>Qualification</th>
+                <th>Experience</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td><strong>Dr. Harish Joshi</strong></td>
+                <td>Professor & HOD</td>
+                <td>Ph.D</td>
+                <td>15 Years</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td><strong>Madhuri Joshi</strong></td>
+                <td>Assistant Professor</td>
+                <td>M.Tech</td>
+                <td>2 Years</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td><strong>Miss. Uzma Kausar</strong></td>
+                <td>Assistant Professor</td>
+                <td>M.Tech</td>
+                <td>2 Years</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td><strong>Mr. Ashok Bawge</strong></td>
+                <td>Assistant Professor</td>
+                <td>M.Tech</td>
+                <td>9 Years</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td><strong>Mr. Mahesh</strong></td>
+                <td>Assistant Professor</td>
+                <td>M.Tech</td>
+                <td>&mdash;</td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td><strong>Mr. Pandit Patil</strong></td>
+                <td>Assistant Professor</td>
+                <td>M.Tech</td>
+                <td>&mdash;</td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td><strong>Mrs. Ibtesham Zarrine</strong></td>
+                <td>Assistant Professor</td>
+                <td>M.Tech</td>
+                <td>&mdash;</td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td><strong>Miss Farhanaaz</strong></td>
+                <td>Assistant Professor</td>
+                <td>M.Tech</td>
+                <td>&mdash;</td>
+              </tr>
+              <tr>
+                <td>9</td>
+                <td><strong>Arati</strong></td>
+                <td>Assistant Professor</td>
+                <td>M.Tech</td>
+                <td>&mdash;</td>
+              </tr>
+              <tr>
+                <td>10</td>
+                <td><strong>Anand</strong></td>
+                <td>Assistant Professor</td>
+                <td>M.Tech</td>
+                <td>&mdash;</td>
+              </tr>
+              <tr>
+                <td>11</td>
+                <td><strong>Miss Preeti</strong></td>
+                <td>Instructor</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <!-- Faculty Cards Grid -->

@@ -1,8 +1,10 @@
 /**
- * Watermelon Continuous Tabs Engine
- * Button-like tabs with a smooth sliding background pill.
- * Spring-based animation with exact color palette styling.
- * Supports: https://registry.watermelon.sh/r/continuous-tabs.json specification
+ * Watermelon Continuous Tabs & Mobile Responsive Interactions Engine
+ * 1. Button-like tabs with smooth sliding background pill (Spring physics).
+ * 2. Mobile collapsible frosted-glass navigation drawer with animated hamburger toggle.
+ * 3. Mobile touch-scrollable in-page tabs with active-tab auto-centering.
+ * 4. Responsive table wrapping with horizontal swipe hints.
+ * Specification: https://registry.watermelon.sh/r/continuous-tabs.json
  */
 
 (function () {
@@ -11,6 +13,7 @@
   class ContinuousTabs {
     constructor(container) {
       this.container = container;
+      this.isHeaderNav = Boolean(container.closest('header'));
       this.track = container.querySelector('.continuous-tabs-track') || container.querySelector('ul') || container;
       this.tabs = Array.from(this.track.querySelectorAll('button, a'));
       if (!this.tabs.length) return;
@@ -35,6 +38,7 @@
         tab.classList.add('continuous-tab-item');
 
         tab.addEventListener('mouseenter', () => {
+          if (this.isHeaderNav && window.innerWidth <= 768) return;
           this.hoveredTab = tab;
           this.updatePill(tab);
         });
@@ -52,9 +56,17 @@
       });
 
       this.track.addEventListener('mouseleave', () => {
+        if (this.isHeaderNav && window.innerWidth <= 768) return;
         this.hoveredTab = null;
         this.updatePill(this.activeTab);
       });
+
+      // Update on horizontal scroll of in-page tabs
+      if (this.container.classList.contains('continuous-tabs-container')) {
+        this.container.addEventListener('scroll', () => {
+          this.updatePill(this.hoveredTab || this.activeTab, false);
+        }, { passive: true });
+      }
 
       window.addEventListener('resize', () => {
         this.updatePill(this.hoveredTab || this.activeTab, false);
@@ -69,13 +81,19 @@
       requestAnimationFrame(() => {
         this.updatePill(this.activeTab, false);
         setTimeout(() => {
-          this.pill.classList.add('ready');
+          if (this.pill) this.pill.classList.add('ready');
         }, 60);
       });
     }
 
     updatePill(targetTab, animate = true) {
       if (!targetTab || !this.pill) return;
+
+      // On mobile viewports for header nav, let standard drawer styles handle states
+      if (this.isHeaderNav && window.innerWidth <= 768) {
+        this.pill.style.opacity = '0';
+        return;
+      }
 
       if (!animate) {
         this.pill.style.transition = 'none';
@@ -102,6 +120,11 @@
       this.tabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       this.updatePill(tab);
+
+      // On mobile in-page tabs, smoothly center the tapped tab in the scroll track
+      if (this.container.classList.contains('continuous-tabs-container')) {
+        tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
     }
 
     switchPanel(panelId) {
@@ -122,7 +145,119 @@
     }
   }
 
-  function initContinuousTabs() {
+  /* --------------------------------------------------------------------------
+     Mobile Navigation Toggle & Drawer Handler
+     -------------------------------------------------------------------------- */
+  function initMobileNavigation() {
+    const header = document.querySelector('header');
+    if (!header) return;
+
+    let toggleBtn = document.getElementById('mobileNavToggle') || header.querySelector('.mobile-nav-toggle');
+
+    // Create toggle dynamically if absent in HTML
+    if (!toggleBtn) {
+      const headerTop = header.querySelector('.header-top');
+      if (headerTop) {
+        let actions = headerTop.querySelector('.header-actions');
+        if (!actions) {
+          actions = document.createElement('div');
+          actions.className = 'header-actions';
+          const badge = headerTop.querySelector('.header-badge');
+          if (badge) actions.appendChild(badge);
+          headerTop.appendChild(actions);
+        }
+        toggleBtn = document.createElement('button');
+        toggleBtn.className = 'mobile-nav-toggle';
+        toggleBtn.id = 'mobileNavToggle';
+        toggleBtn.setAttribute('aria-label', 'Toggle navigation menu');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        toggleBtn.innerHTML = `
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        `;
+        actions.appendChild(toggleBtn);
+      }
+    }
+
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = header.classList.toggle('nav-open');
+        toggleBtn.classList.toggle('active', isOpen);
+        toggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+
+      // Close drawer on link click
+      const navLinks = header.querySelectorAll('nav a');
+      navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth <= 768) {
+            header.classList.remove('nav-open');
+            toggleBtn.classList.remove('active');
+            toggleBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+      });
+
+      // Close drawer when clicking outside
+      document.addEventListener('click', (e) => {
+        if (header.classList.contains('nav-open') && !header.contains(e.target)) {
+          header.classList.remove('nav-open');
+          toggleBtn.classList.remove('active');
+          toggleBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // Close drawer on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && header.classList.contains('nav-open')) {
+          header.classList.remove('nav-open');
+          toggleBtn.classList.remove('active');
+          toggleBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // Auto close on desktop resize
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 768 && header.classList.contains('nav-open')) {
+          header.classList.remove('nav-open');
+          toggleBtn.classList.remove('active');
+          toggleBtn.setAttribute('aria-expanded', 'false');
+        }
+      }, { passive: true });
+    }
+  }
+
+  /* --------------------------------------------------------------------------
+     Responsive Data Tables Auto-Wrapper
+     Ensures no raw table ever breaks mobile viewport width
+     -------------------------------------------------------------------------- */
+  function initResponsiveTables() {
+    const tables = document.querySelectorAll('table.data-table');
+    tables.forEach(table => {
+      if (!table.parentElement.classList.contains('table-responsive')) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'table-responsive';
+
+        const hint = document.createElement('div');
+        hint.className = 'table-scroll-hint';
+        hint.innerHTML = '<span>Swipe horizontally to view full table &rarr;</span>';
+
+        table.parentNode.insertBefore(wrapper, table);
+        wrapper.appendChild(hint);
+        wrapper.appendChild(table);
+      }
+    });
+  }
+
+  /* --------------------------------------------------------------------------
+     Initialize Engine
+     -------------------------------------------------------------------------- */
+  function init() {
+    initMobileNavigation();
+    initResponsiveTables();
+
     const navs = document.querySelectorAll('header nav, .continuous-tabs-container');
     navs.forEach(nav => {
       new ContinuousTabs(nav);
@@ -130,9 +265,8 @@
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initContinuousTabs);
+    document.addEventListener('DOMContentLoaded', init);
   } else {
-    initContinuousTabs();
+    init();
   }
 })();
-
