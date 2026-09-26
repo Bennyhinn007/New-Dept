@@ -8,7 +8,7 @@ An academic department portal built for the **Department of Computer Science and
 ## 🌟 Key Features
 
 - **Dark Singularity Canvas Atmosphere**: Custom WebGL/Canvas black-hole and cosmic accretion shader background with interactive orbital dynamics.
-- **Continuous Tabs Component**: Built according to the [Watermelon UI](https://registry.watermelon.sh/r/continuous-tabs.json) specification with smooth spring physics, sliding indicator pill, and responsive panel switching.
+- **Continuous Navigation Tabs Component**: Single primary navigation tab bar built according to the [Watermelon UI](https://registry.watermelon.sh/r/continuous-tabs.json) specification with smooth spring physics, sliding indicator pill on desktop, and collapsible frosted-glass drawer on mobile.
 - **Official Institutional Branding**: Embedded official emblem of Guru Nanak Dev Engineering College, Bidar, and the official Department of IoT & Cybersecurity / Cyber Samurai Association emblem.
 - **Strict Academic Color Palette**:
   - Deep Teal / Navy — `#244855`

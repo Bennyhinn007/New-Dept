@@ -1,21 +1,19 @@
 /**
  * Watermelon Continuous Tabs & Mobile Responsive Interactions Engine
- * 1. Button-like tabs with smooth sliding background pill (Spring physics).
- * 2. Mobile collapsible frosted-glass navigation drawer with animated hamburger toggle.
- * 3. Mobile touch-scrollable in-page tabs with active-tab auto-centering.
- * 4. Responsive table wrapping with horizontal swipe hints.
+ * 1. Single Main Tab Bar: Header navigation with smooth sliding background pill (Spring physics).
+ * 2. Mobile Collapsible Navigation Drawer: Frosted-glass menu with animated hamburger toggle.
+ * 3. Responsive Data Tables: Touch-friendly horizontal scrolling wrapper with swipe hints.
  * Specification: https://registry.watermelon.sh/r/continuous-tabs.json
  */
 
 (function () {
   'use strict';
 
-  class ContinuousTabs {
-    constructor(container) {
-      this.container = container;
-      this.isHeaderNav = Boolean(container.closest('header'));
-      this.track = container.querySelector('.continuous-tabs-track') || container.querySelector('ul') || container;
-      this.tabs = Array.from(this.track.querySelectorAll('button, a'));
+  class ContinuousNavTabs {
+    constructor(navContainer) {
+      this.nav = navContainer;
+      this.track = navContainer.querySelector('.continuous-tabs-track') || navContainer.querySelector('ul') || navContainer;
+      this.tabs = Array.from(this.track.querySelectorAll('a, button'));
       if (!this.tabs.length) return;
 
       this.pill = null;
@@ -28,45 +26,34 @@
     init() {
       this.track.classList.add('continuous-tabs-track');
 
-      // Create sliding pill
+      // Create sliding pill for desktop navigation
       this.pill = document.createElement('div');
       this.pill.className = 'continuous-tabs-pill';
       this.track.appendChild(this.pill);
 
-      // Bind events
+      // Bind events to each navigation tab item
       this.tabs.forEach(tab => {
         tab.classList.add('continuous-tab-item');
 
         tab.addEventListener('mouseenter', () => {
-          if (this.isHeaderNav && window.innerWidth <= 768) return;
+          if (window.innerWidth <= 768) return;
           this.hoveredTab = tab;
           this.updatePill(tab);
         });
 
-        tab.addEventListener('click', (e) => {
-          const targetId = tab.getAttribute('data-tab-target');
-          if (targetId) {
-            e.preventDefault();
-            this.setActiveTab(tab);
-            this.switchPanel(targetId);
-          } else {
-            this.setActiveTab(tab);
-          }
+        tab.addEventListener('click', () => {
+          this.activeTab = tab;
+          this.tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          this.updatePill(tab);
         });
       });
 
       this.track.addEventListener('mouseleave', () => {
-        if (this.isHeaderNav && window.innerWidth <= 768) return;
+        if (window.innerWidth <= 768) return;
         this.hoveredTab = null;
         this.updatePill(this.activeTab);
       });
-
-      // Update on horizontal scroll of in-page tabs
-      if (this.container.classList.contains('continuous-tabs-container')) {
-        this.container.addEventListener('scroll', () => {
-          this.updatePill(this.hoveredTab || this.activeTab, false);
-        }, { passive: true });
-      }
 
       window.addEventListener('resize', () => {
         this.updatePill(this.hoveredTab || this.activeTab, false);
@@ -89,7 +76,7 @@
     updatePill(targetTab, animate = true) {
       if (!targetTab || !this.pill) return;
 
-      // On mobile viewports (<= 768px), direct CSS active styling handles tab states cleanly
+      // On mobile viewports (<= 768px), drawer styles apply without desktop sliding pill
       if (window.innerWidth <= 768) {
         this.pill.style.opacity = '0';
         return;
@@ -113,35 +100,6 @@
       this.pill.style.width = `${width}px`;
       this.pill.style.height = `${height}px`;
       this.pill.style.opacity = '1';
-    }
-
-    setActiveTab(tab) {
-      this.activeTab = tab;
-      this.tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      this.updatePill(tab);
-
-      // On mobile in-page tabs, smoothly center the tapped tab in the scroll track
-      if (this.container.classList.contains('continuous-tabs-container')) {
-        tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      }
-    }
-
-    switchPanel(panelId) {
-      const main = document.querySelector('main');
-      if (!main) return;
-      const panels = main.querySelectorAll('[data-tab-panel]');
-      panels.forEach(p => {
-        if (panelId === 'tab-all' || p.getAttribute('data-tab-panel') === panelId) {
-          p.classList.add('active');
-          p.style.display = 'block';
-          p.style.animation = 'fadeInUp 400ms ease forwards';
-        } else {
-          p.classList.remove('active');
-          p.style.display = 'none';
-        }
-      });
-      window.dispatchEvent(new Event('resize'));
     }
   }
 
@@ -258,10 +216,17 @@
     initMobileNavigation();
     initResponsiveTables();
 
-    const navs = document.querySelectorAll('header nav, .continuous-tabs-container');
-    navs.forEach(nav => {
-      new ContinuousTabs(nav);
+    // Ensure all section blocks are fully visible
+    const sections = document.querySelectorAll('main .section-block');
+    sections.forEach(sec => {
+      sec.style.display = 'block';
     });
+
+    // Initialize continuous sliding tabs strictly on the main header navigation
+    const headerNav = document.querySelector('header nav');
+    if (headerNav) {
+      new ContinuousNavTabs(headerNav);
+    }
   }
 
   if (document.readyState === 'loading') {
