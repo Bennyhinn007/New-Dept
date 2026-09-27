@@ -9,12 +9,13 @@
   'use strict';
 
   // --- Configuration ---
+  const isMobile = typeof window !== 'undefined' && (window.innerWidth <= 768 || /Mobi|Android|iPhone/i.test(navigator.userAgent));
   const CONFIG = {
     speed: 0.75,            // Animation speed
-    mouseSensitivity: 0.5,  // Mouse response
+    mouseSensitivity: 0.4,  // Mouse response
     mouseDamping: 0.88,     // Smooth mouse trailing
     fps: 60,                // Target framerate
-    maxDpr: 1.5,            // Cap DPR for smooth 60fps performance
+    maxDpr: isMobile ? 0.75 : 1.0, // Optimized DPR: silky smooth 60/120fps without GPU throttling
     mode: 'cosmic',         // Deep cosmic background
     hsv: {
       hue: 195,             // Deep Teal / Navy cosmic accretion glow matching #244855
@@ -25,7 +26,7 @@
 
   const vertexShaderSource = `#version 300 es
     #ifdef GL_ES
-    precision highp float;
+    precision mediump float;
     #endif
     in vec2 position;
     void main() {
@@ -35,8 +36,8 @@
 
   const fragmentShaderSource = `#version 300 es
     #ifdef GL_ES
-    precision highp float;
-    precision highp int;
+    precision mediump float;
+    precision mediump int;
     #endif
 
     uniform vec3      iResolution;     // viewport resolution (in pixels)
@@ -76,7 +77,7 @@
         return hsv2rgb(hsv);
     }
 
-    // "Singularity" by @XorDev (ShaderToy: 3csSWB)
+    // "Singularity" by @XorDev (ShaderToy: 3csSWB) - Optimized
     void mainImage(out vec4 O, in vec2 F)
     {
       float i = 0.2, a;
@@ -98,7 +99,8 @@
       vec2 v = c * mat2(cos(0.5 * log(a) + iTime * i + rot)) / i;
       vec2 w = vec2(0.0);
 
-      for (; i < 9.0; i += 1.0) {
+      // Optimized 5.5 iterations for flawless 60/120fps performance
+      for (; i < 5.5; i += 1.0) {
         w += 1.0 + sin(v);
         v += 0.7 * sin(v.yx * i + iTime) / i + 0.5;
       }
@@ -168,6 +170,8 @@
       this.prevTime = this.startTime;
       this.frameCount = 0;
       this.isPlaying = true;
+      this.isScrolling = false;
+      this.scrollTimer = null;
       this.mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
       this.animId = null;
 
@@ -247,7 +251,8 @@
     }
 
     handleResize() {
-      const dpr = Math.min(window.devicePixelRatio || 1, CONFIG.maxDpr);
+      const isMob = window.innerWidth <= 768;
+      const dpr = isMob ? 0.75 : Math.min(window.devicePixelRatio || 1, 1.0);
       const width = window.innerWidth;
       const height = window.innerHeight;
 
@@ -264,8 +269,17 @@
     bindEvents() {
       window.addEventListener('resize', () => this.handleResize(), { passive: true });
 
+      // Track scrolling to prioritize 60/120fps scrolling smoothness
+      window.addEventListener('scroll', () => {
+        this.isScrolling = true;
+        if (this.scrollTimer) clearTimeout(this.scrollTimer);
+        this.scrollTimer = setTimeout(() => {
+          this.isScrolling = false;
+        }, 100);
+      }, { passive: true });
+
       const updateMouse = (clientX, clientY) => {
-        const dpr = Math.min(window.devicePixelRatio || 1, CONFIG.maxDpr);
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.0);
         this.mouse.targetX = clientX * dpr * CONFIG.mouseSensitivity;
         this.mouse.targetY = (window.innerHeight - clientY) * dpr * CONFIG.mouseSensitivity;
       };
@@ -294,6 +308,12 @@
 
     animate = () => {
       if (!this.isPlaying) return;
+
+      // When user is actively scrolling, defer heavy fragment shader passes
+      if (this.isScrolling) {
+        this.animId = requestAnimationFrame(this.animate);
+        return;
+      }
 
       const now = performance.now();
       const elapsed = (now - this.startTime) * 0.001 * CONFIG.speed;

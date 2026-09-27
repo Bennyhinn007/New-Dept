@@ -1,13 +1,16 @@
 /**
- * Neon Border — Originkit (Vanilla JS Port)
+ * Neon Border — Originkit (Vanilla JS Port) - Performance Optimized
  * High-performance animated neon perimeter border with conic-gradient arcs,
  * multi-tier glow diffusion, and step/continuous easing.
+ * Optimized with IntersectionObserver, scroll-pause, and lightweight GPU layer blending.
  */
 (function () {
   "use strict";
 
+  const isMobile = typeof window !== "undefined" && (window.innerWidth <= 768 || /Mobi|Android|iPhone/i.test(navigator.userAgent));
+
   const DEFAULTS = {
-    color: "#00dfa2", // Neon Teal / Cyan highlight or #CC9149
+    color: "#00dfa2",
     rounded: 24,
     thickness: 4,
     borderSize: 45,
@@ -16,14 +19,15 @@
     speed: 15,
   };
 
-  const EDGE_COPIES = 2;
-  const GLOW_LAYERS = [
-    { blur: 8, opacity: 0.65, reach: 0.3 },
-    { blur: 16, opacity: 0.45, reach: 0.6 },
-    { blur: 48, opacity: 0.28, reach: 1 },
-  ];
+  const EDGE_COPIES = isMobile ? 1 : 2;
+  const GLOW_LAYERS = isMobile
+    ? [{ blur: 10, opacity: 0.55, reach: 0.4 }]
+    : [
+        { blur: 8, opacity: 0.6, reach: 0.3 },
+        { blur: 18, opacity: 0.38, reach: 0.65 },
+      ];
   const MAX_GLOW_BLUR = Math.max(...GLOW_LAYERS.map((l) => l.blur));
-  const MAX_GLOW_REACH = 36;
+  const MAX_GLOW_REACH = 28;
 
   function withAlpha(input, alpha) {
     const a = Math.max(0, Math.min(1, alpha));
@@ -73,7 +77,7 @@
     return (Math.atan2(x - w / 2, h / 2 - y) * 180) / Math.PI;
   }
 
-  const ARC_SAMPLES = 24;
+  const ARC_SAMPLES = 14; // Optimized from 24 for lightning-fast gradient compilation
   const MIN_ARC = 0.015;
 
   function buildArc(lap, lengthPct, w, h, color) {
@@ -106,15 +110,15 @@
       const k =
         solidT >= 1 ? 1 : t <= solidT ? 1 : 1 - (t - solidT) / (1 - solidT);
       stops.push(
-        `${withAlpha(color, k * k * (3 - 2 * k))} ${acc.toFixed(2)}deg`
+        `${withAlpha(color, k * k * (3 - 2 * k))} ${acc.toFixed(1)}deg`
       );
     }
 
-    const end = acc.toFixed(2);
+    const end = acc.toFixed(1);
     stops.push(`${withAlpha(color, 0)} ${end}deg`);
     stops.push(`${withAlpha(color, 0)} 360deg`);
 
-    return `conic-gradient(from ${base.toFixed(2)}deg at 50% 50%, ${stops.join(
+    return `conic-gradient(from ${base.toFixed(1)}deg at 50% 50%, ${stops.join(
       ", "
     )})`;
   }
@@ -181,15 +185,16 @@
       this.lap = 0;
       this.corner = 0;
       this.stepT = 0;
+      this.isVisible = true;
+      this.isScrolling = false;
+      this.scrollTimer = null;
 
       this._init();
     }
 
     _init() {
-      // Ensure root has relative positioning and border radius
       this.root.style.position = "relative";
 
-      // Wrapper overlay inside root that holds all neon glow bands without clipping
       this.overlay = document.createElement("div");
       this.overlay.className = "neon-border-overlay";
       this.overlay.style.cssText = `
@@ -198,6 +203,8 @@
         pointer-events: none;
         overflow: visible;
         z-index: 10;
+        transform: translateZ(0);
+        will-change: transform;
       `;
 
       this.groupA = document.createElement("div");
@@ -213,8 +220,38 @@
       this.root.appendChild(this.overlay);
 
       this._observeSize();
+      this._observeIntersection();
+      this._observeScroll();
       this._buildLayers();
       this._startLoop();
+    }
+
+    _observeIntersection() {
+      if (typeof IntersectionObserver !== "undefined") {
+        this.io = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            const wasVisible = this.isVisible;
+            this.isVisible = entry.isIntersecting;
+            if (this.isVisible && !wasVisible) {
+              this.lastTime = performance.now();
+              if (!this.rafId) this._startLoop();
+            }
+          });
+        }, { threshold: 0.05 });
+        this.io.observe(this.root);
+      } else {
+        this.isVisible = true;
+      }
+    }
+
+    _observeScroll() {
+      window.addEventListener("scroll", () => {
+        this.isScrolling = true;
+        if (this.scrollTimer) clearTimeout(this.scrollTimer);
+        this.scrollTimer = setTimeout(() => {
+          this.isScrolling = false;
+        }, 100);
+      }, { passive: true });
     }
 
     _observeSize() {
@@ -235,14 +272,12 @@
         window.addEventListener("resize", updateSize);
       }
 
-      // Check if image inside finishes loading or changes dimensions
       const img = this.root.querySelector("img");
       if (img) {
         if (!img.complete) {
           img.addEventListener("load", () => updateSize(), { once: true });
         } else {
-          // Double check in next tick in case layout reflow occurs
-          setTimeout(updateSize, 50);
+          setTimeout(updateSize, 60);
         }
       }
       window.addEventListener("load", () => updateSize(), { once: true });
@@ -253,13 +288,13 @@
       const { w, h } = this.size;
       if (w <= 0 || h <= 0) return;
 
-      const thick = Math.max(1, Math.min(10, thickness));
+      const thick = Math.max(1, Math.min(8, thickness));
       const radius = (Math.max(0, Math.min(100, rounded)) / 100) * (Math.min(w, h) / 2);
       this.root.style.borderRadius = `${radius}px`;
 
       const amount = Math.max(0, Math.min(100, glow)) / 100;
       const ringAt = (share) => thick + amount * MAX_GLOW_REACH * share;
-      const glowOuter = 10 + MAX_GLOW_REACH + MAX_GLOW_BLUR * 2;
+      const glowOuter = 8 + MAX_GLOW_REACH + MAX_GLOW_BLUR * 2;
 
       const buildBandHtml = (r, offset = 0) => {
         const bandRadius = radius > 0 ? radius + r : 0;
@@ -322,6 +357,17 @@
 
     _startLoop() {
       const frame = (now) => {
+        if (!this.isVisible) {
+          this.rafId = null;
+          return;
+        }
+
+        // Defer gradient string recalculation during scroll swipes
+        if (this.isScrolling) {
+          this.rafId = requestAnimationFrame(frame);
+          return;
+        }
+
         const dt = Math.min(0.05, Math.max(0, (now - this.lastTime) / 1000));
         this.lastTime = now;
 
@@ -365,13 +411,13 @@
     destroy() {
       if (this.rafId) cancelAnimationFrame(this.rafId);
       if (this.ro) this.ro.disconnect();
+      if (this.io) this.io.disconnect();
       if (this.overlay && this.overlay.parentNode) {
         this.overlay.parentNode.removeChild(this.overlay);
       }
     }
   }
 
-  // Auto-initialize elements with [data-neon-border]
   function initAllNeonBorders() {
     const targets = document.querySelectorAll("[data-neon-border]");
     targets.forEach((el) => {
