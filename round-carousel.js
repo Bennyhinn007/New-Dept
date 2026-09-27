@@ -1,167 +1,362 @@
 /**
- * Round Carousel — Originkit (Vanilla JS Port) - Performance Optimized
- * 3D circular carousel with drag, tilt, perspective, auto-spin, and IntersectionObserver.
+ * Round Carousel — Originkit (Vanilla JS Port)
+ * High-Performance 3D Circular Carousel with Inertia, Auto-spin, Adaptive Responsive Sizing,
+ * Mobile Touch-Scroll Passthrough, and Active Faculty Info Synchronization.
  */
 (function () {
   "use strict";
 
-  const DEFAULT_OPTIONS = {
-    imageWidth: 150,
-    imageHeight: 190,
-    spacing: 30,
-    speed: 0.35,
+  const DEFAULTS = {
+    speed: 3.5,
     direction: "right",
     drag: true,
-    sensitivity: 1.0,
-    tilt: 8,
-    perspective: 800,
+    sensitivity: 3.5,
+    tilt: -7,
+    innerDim: 3.5,
     cornerRadius: 18,
-    innerDim: 160,
-    background: "transparent",
   };
 
   class RoundCarousel {
     constructor(container, items, options) {
+      if (!container) return;
       this.container = container;
-      this.items = items;
-      this.opts = Object.assign({}, DEFAULT_OPTIONS, options || {});
-      this.angle = 0;
-      this.targetAngle = 0;
-      this.velocity = 0;
-      this.isDragging = false;
-      this.lastX = 0;
+      this.items = items || [];
+      this.opts = Object.assign({}, DEFAULTS, options || {});
+      this.count = this.items.length;
+      if (this.count === 0) return;
+
+      this.angle = 360 / this.count;
+      this.rotY = 0;
+      this.targetRotY = null;
+      this.vel = 0;
+      this.lastTime = 0;
       this.rafId = null;
       this.activeIndex = -1;
       this.isVisible = true;
-      this.isScrolling = false;
-      this.scrollTimer = null;
+
+      // Pointer / Drag State
+      this.drag = {
+        active: false,
+        startX: 0,
+        startY: 0,
+        lastX: 0,
+        moved: false,
+        directionDecided: false,
+        isHorizontal: false,
+      };
 
       this._build();
-      this._observeIntersection();
-      this._observeScroll();
+      this._recalc();
+      this._observe();
       this._attachEvents();
+      this._updateInfo(0, true);
       this._startLoop();
     }
 
-    get count() { return this.items.length; }
-    get stepAngle() { return 360 / this.count; }
-
     _initials(name) {
-      return name.split(" ").filter(Boolean).map(w => w[0].toUpperCase()).slice(0, 2).join("");
+      if (!name) return "?";
+      const parts = name.replace(/^(Dr\.|Mr\.|Mrs\.|Miss\.?)\s+/i, "").split(/\s+/).filter(Boolean);
+      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+      return (parts[0] ? parts[0].slice(0, 2) : "?").toUpperCase();
     }
 
     _build() {
-      var opts = this.opts;
-      var self = this;
-      this.container.style.cssText += "position:relative;overflow:visible;display:flex;flex-direction:column;align-items:center;";
+      const self = this;
+      this.container.innerHTML = "";
+      this.container.style.cssText = "position:relative;width:100%;max-width:100%;display:flex;flex-direction:column;align-items:center;user-select:none;-webkit-user-select:none;";
 
-      this.stage = document.createElement("div");
-      this.stage.className = "rc-stage";
-      this.stage.style.cssText = "position:relative;perspective:" + opts.perspective + "px;transform-style:preserve-3d;cursor:grab;user-select:none;margin:0 auto;transform:translateZ(0);";
+      // 3D Viewport
+      this.viewport = document.createElement("div");
+      this.viewport.className = "rc-viewport";
+      this.viewport.style.cssText = "position:relative;width:100%;max-width:100%;display:flex;align-items:center;justify-content:center;overflow:visible;touch-action:pan-y;cursor:grab;";
 
-      this.rig = document.createElement("div");
-      this.rig.style.cssText = "width:100%;height:100%;position:relative;transform-style:preserve-3d;transform:translateZ(0);will-change:transform;";
-      this.stage.appendChild(this.rig);
-      this.container.appendChild(this.stage);
+      // Tilt Wrapper (Applies subtle forward angle so cylinder is viewed in perspective)
+      this.tiltWrapper = document.createElement("div");
+      this.tiltWrapper.className = "rc-tilt-wrapper";
+      this.tiltWrapper.style.cssText = "transform-style:preserve-3d;transform:rotateX(" + this.opts.tilt + "deg);display:flex;align-items:center;justify-content:center;position:relative;";
+      this.viewport.appendChild(this.tiltWrapper);
 
-      this.cardEls = this.items.map((item, i) => {
-        var el = document.createElement("div");
-        el.className = "rc-card";
-        el.dataset.index = i;
-        el.style.cssText = "position:absolute;width:" + opts.imageWidth + "px;height:" + opts.imageHeight + "px;top:50%;left:50%;margin-top:-" + (opts.imageHeight / 2) + "px;margin-left:-" + (opts.imageWidth / 2) + "px;border-radius:" + opts.cornerRadius + "px;overflow:hidden;backface-visibility:hidden;will-change:transform;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.4);transition:box-shadow .2s ease;";
+      // 3D Rotating Ring
+      this.ring = document.createElement("div");
+      this.ring.className = "rc-ring";
+      this.ring.style.cssText = "position:relative;transform-style:preserve-3d;will-change:transform;";
+      this.tiltWrapper.appendChild(this.ring);
+
+      // Create Cards
+      this.cards = this.items.map((item, i) => {
+        const card = document.createElement("div");
+        card.className = "rc-card";
+        card.dataset.index = i;
+        card.style.cssText = "position:absolute;inset:0;transform-style:preserve-3d;cursor:pointer;border-radius:" + self.opts.cornerRadius + "px;";
+
+        // Front Face
+        const front = document.createElement("div");
+        front.className = "rc-card-face rc-card-front";
+        front.style.cssText = "position:absolute;inset:0;border-radius:" + self.opts.cornerRadius + "px;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 10px;text-align:center;background:linear-gradient(145deg,rgba(22,42,50,0.96) 0%,rgba(10,18,24,0.98) 100%);border:1px solid rgba(144,174,173,0.3);box-shadow:0 10px 28px rgba(0,0,0,0.55);transition:border-color .25s ease,box-shadow .25s ease;";
+
         if (item.src) {
-          var img = document.createElement("img");
+          const img = document.createElement("img");
           img.src = item.src;
           img.alt = item.name || "";
-          img.style.cssText = "width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;";
-          el.appendChild(img);
+          img.style.cssText = "width:100%;height:100%;object-fit:cover;position:absolute;inset:0;pointer-events:none;border-radius:" + self.opts.cornerRadius + "px;";
+          front.appendChild(img);
         } else {
-          el.style.background = "linear-gradient(135deg,#0d9488,#ff6b6b)";
-          el.style.display = "flex";
-          el.style.alignItems = "center";
-          el.style.justifyContent = "center";
-          var span = document.createElement("span");
-          span.textContent = this._initials(item.name || "?");
-          span.style.cssText = "font-size:2.8rem;font-weight:800;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.5);font-family:Inter,Outfit,sans-serif;pointer-events:none;";
-          el.appendChild(span);
+          // Initials Avatar Circle
+          const avatar = document.createElement("div");
+          avatar.className = "rc-card-avatar";
+          avatar.textContent = self._initials(item.name);
+          avatar.style.cssText = "width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#0d9488,#E64833);display:flex;align-items:center;justify-content:center;font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:8px;box-shadow:0 4px 12px rgba(0,0,0,0.4);font-family:Inter,Outfit,sans-serif;flex-shrink:0;pointer-events:none;";
+          front.appendChild(avatar);
+
+          // Name
+          const nameEl = document.createElement("div");
+          nameEl.className = "rc-card-name";
+          nameEl.textContent = item.name;
+          nameEl.style.cssText = "font-size:0.86rem;font-weight:700;color:#FBE9D0;line-height:1.25;margin-bottom:3px;font-family:Plus Jakarta Sans,Inter,sans-serif;pointer-events:none;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;";
+          front.appendChild(nameEl);
+
+          // Role
+          const roleEl = document.createElement("div");
+          roleEl.className = "rc-card-role";
+          roleEl.textContent = item.designation || "";
+          roleEl.style.cssText = "font-size:0.72rem;color:#0d9488;font-weight:600;line-height:1.2;margin-bottom:4px;font-family:Inter,sans-serif;pointer-events:none;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;";
+          front.appendChild(roleEl);
+
+          // Qualification pill
+          if (item.qualification) {
+            const qual = document.createElement("span");
+            qual.className = "rc-card-qual";
+            qual.textContent = item.qualification;
+            qual.style.cssText = "font-size:0.65rem;font-weight:600;color:#90AEAD;background:rgba(144,174,173,0.14);border:1px solid rgba(144,174,173,0.25);border-radius:999px;padding:2px 8px;pointer-events:none;white-space:nowrap;";
+            front.appendChild(qual);
+          }
         }
-        el.addEventListener("click", function(){ self._focusIndex(i); });
-        this.rig.appendChild(el);
-        return el;
+
+        // Back Face (Interior of Cylinder)
+        const back = document.createElement("div");
+        back.className = "rc-card-face rc-card-back";
+        back.style.cssText = "position:absolute;inset:0;border-radius:" + self.opts.cornerRadius + "px;overflow:hidden;transform:rotateY(180deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;background:#0d1820;border:1px solid rgba(144,174,173,0.12);box-shadow:0 8px 24px rgba(0,0,0,0.5);filter:brightness(" + (self.opts.innerDim / 10) + ");pointer-events:none;";
+        const backEmblem = document.createElement("div");
+        backEmblem.style.cssText = "width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:rgba(144,174,173,0.2);font-size:1.8rem;font-weight:900;font-family:Inter,sans-serif;";
+        backEmblem.textContent = "CSE";
+        back.appendChild(backEmblem);
+
+        card.appendChild(front);
+        card.appendChild(back);
+
+        card.addEventListener("click", function (e) {
+          if (!self.drag.moved) {
+            self.focusIndex(i);
+          }
+        });
+
+        self.ring.appendChild(card);
+        return { card, front };
       });
 
+      this.container.appendChild(this.viewport);
+
+      // Info Panel below Carousel
       this.infoPanel = document.createElement("div");
       this.infoPanel.className = "rc-info-panel";
-      this.infoPanel.style.cssText = "margin-top:24px;text-align:center;min-height:76px;transition:opacity .2s ease;";
+      this.infoPanel.style.cssText = "margin-top:18px;text-align:center;min-height:76px;transition:opacity .2s ease;width:100%;max-width:540px;padding:0 12px;";
       this.container.appendChild(this.infoPanel);
-
-      this._layoutCards();
-      this._updateInfo(0);
     }
 
-    _observeIntersection() {
+    _recalc() {
+      const containerW = this.container.clientWidth || window.innerWidth;
+      let cardW, cardH, spacing, perspective, stageH;
+
+      if (containerW < 480) {
+        cardW = Math.max(74, Math.floor(containerW * 0.23));
+        cardH = Math.round(cardW * 1.34);
+        spacing = 1.0;
+        perspective = 850;
+        stageH = cardH + 70;
+      } else if (containerW < 768) {
+        cardW = Math.max(100, Math.floor(containerW * 0.21));
+        cardH = Math.round(cardW * 1.34);
+        spacing = 1.2;
+        perspective = 1100;
+        stageH = cardH + 85;
+      } else {
+        cardW = 150;
+        cardH = 200;
+        spacing = 1.45;
+        perspective = 1350;
+        stageH = 310;
+      }
+
+      const factor = 1 + spacing * 0.12;
+      const radius = Math.round((cardW * factor) / (2 * Math.tan(Math.PI / this.count)));
+
+      this.cardW = cardW;
+      this.cardH = cardH;
+      this.radius = radius;
+      this.perspective = perspective;
+
+      this.viewport.style.height = stageH + "px";
+      this.viewport.style.perspective = perspective + "px";
+
+      this.ring.style.width = cardW + "px";
+      this.ring.style.height = cardH + "px";
+
+      // Position Cards on 3D Ring
+      const self = this;
+      this.cards.forEach((item, i) => {
+        const cardAngle = i * self.angle;
+        item.card.style.transform = "rotateY(" + cardAngle + "deg) translateZ(" + radius + "px)";
+      });
+
+      this._applyTransform();
+    }
+
+    _applyTransform() {
+      this.ring.style.transform = "translateZ(" + (-this.radius) + "px) rotateY(" + this.rotY.toFixed(2) + "deg)";
+    }
+
+    _observe() {
+      const self = this;
+      // Intersection Observer to suspend loop when off-screen
       if (typeof IntersectionObserver !== "undefined") {
         this.io = new IntersectionObserver((entries) => {
           entries.forEach((entry) => {
-            const wasVisible = this.isVisible;
-            this.isVisible = entry.isIntersecting;
-            if (this.isVisible && !wasVisible && !this.rafId) {
-              this._startLoop();
+            const wasVisible = self.isVisible;
+            self.isVisible = entry.isIntersecting;
+            if (self.isVisible && !wasVisible && !self.rafId) {
+              self.lastTime = 0;
+              self._startLoop();
             }
           });
         }, { threshold: 0.05 });
         this.io.observe(this.container);
       }
+
+      // Responsive Resize
+      if (typeof ResizeObserver !== "undefined") {
+        this.ro = new ResizeObserver(() => {
+          self._recalc();
+        });
+        this.ro.observe(this.container);
+      } else {
+        window.addEventListener("resize", () => self._recalc(), { passive: true });
+      }
     }
 
-    _observeScroll() {
-      window.addEventListener("scroll", () => {
-        this.isScrolling = true;
-        if (this.scrollTimer) clearTimeout(this.scrollTimer);
-        this.scrollTimer = setTimeout(() => {
-          this.isScrolling = false;
-        }, 100);
-      }, { passive: true });
-    }
+    _attachEvents() {
+      if (!this.opts.drag) return;
+      const self = this;
+      const vp = this.viewport;
 
-    _layoutCards() {
-      var n = this.count;
-      var opts = this.opts;
-      var chord = opts.imageWidth + opts.spacing;
-      var r = n === 1 ? 0 : chord / (2 * Math.sin(Math.PI / n));
-      this.radius = r;
-      var diam = r * 2 + opts.imageWidth + 40;
-      var stageW = Math.max(diam, opts.innerDim);
-      var stageH = opts.imageHeight + 40;
-      this.stage.style.width = stageW + "px";
-      this.stage.style.height = stageH + "px";
-      this.stage.style.marginTop = "14px";
-      this.cardEls.forEach((el, i) => {
-        el.dataset.baseAngle = (360 / n) * i;
-      });
+      const onPointerDown = function (e) {
+        if (e.button !== undefined && e.button !== 0) return;
+        try {
+          vp.setPointerCapture(e.pointerId);
+        } catch (_) {}
+
+        self.drag.active = true;
+        self.drag.startX = e.clientX;
+        self.drag.startY = e.clientY;
+        self.drag.lastX = e.clientX;
+        self.drag.moved = false;
+        self.drag.directionDecided = false;
+        self.drag.isHorizontal = false;
+        self.vel = 0;
+        self.targetRotY = null;
+        vp.style.cursor = "grabbing";
+      };
+
+      const onPointerMove = function (e) {
+        if (!self.drag.active) return;
+        const dx = e.clientX - self.drag.lastX;
+        const totalDx = e.clientX - self.drag.startX;
+        const totalDy = e.clientY - self.drag.startY;
+
+        // Intent detection: if vertical movement dominates early on mobile, release to native page scroll
+        if (!self.drag.directionDecided) {
+          if (Math.abs(totalDx) > 5 || Math.abs(totalDy) > 5) {
+            self.drag.directionDecided = true;
+            if (Math.abs(totalDy) > Math.abs(totalDx) * 1.2) {
+              // User is scrolling the page vertically! Release capture
+              self.drag.active = false;
+              vp.style.cursor = "grab";
+              try {
+                vp.releasePointerCapture(e.pointerId);
+              } catch (_) {}
+              return;
+            } else {
+              self.drag.isHorizontal = true;
+            }
+          } else {
+            return;
+          }
+        }
+
+        if (self.drag.isHorizontal) {
+          self.drag.moved = true;
+          self.drag.lastX = e.clientX;
+          const k = 0.28 * (self.opts.sensitivity / 5);
+          self.rotY += dx * k;
+          self.vel = dx * k * 50;
+          self._applyTransform();
+        }
+      };
+
+      const onPointerUp = function (e) {
+        if (!self.drag.active) return;
+        self.drag.active = false;
+        vp.style.cursor = "grab";
+        try {
+          vp.releasePointerCapture(e.pointerId);
+        } catch (_) {}
+      };
+
+      vp.addEventListener("pointerdown", onPointerDown);
+      vp.addEventListener("pointermove", onPointerMove);
+      vp.addEventListener("pointerup", onPointerUp);
+      vp.addEventListener("pointercancel", onPointerUp);
     }
 
     _startLoop() {
-      var self = this;
-      function tick() {
+      const self = this;
+      const degPerSec = this.opts.speed * 6 * (this.opts.direction === "left" ? -1 : 1);
+
+      function tick(now) {
         if (!self.isVisible) {
           self.rafId = null;
           return;
         }
 
-        // Defer during rapid scroll bursts to keep 60/120fps scrolling fluid
-        if (self.isScrolling && !self.isDragging) {
-          self.rafId = requestAnimationFrame(tick);
-          return;
+        const dt = self.lastTime ? Math.min((now - self.lastTime) / 1000, 0.1) : 0.016;
+        self.lastTime = now;
+
+        if (!self.drag.active) {
+          if (self.targetRotY !== null) {
+            // Smoothly lerp towards clicked target card
+            const diff = self.targetRotY - self.rotY;
+            if (Math.abs(diff) < 0.1) {
+              self.rotY = self.targetRotY;
+              self.targetRotY = null;
+              self.vel = 0;
+            } else {
+              self.rotY += diff * 0.12;
+            }
+          } else if (Math.abs(self.vel) > 0.04) {
+            self.rotY += self.vel * dt;
+            self.vel *= 0.94;
+          } else {
+            self.rotY += degPerSec * dt;
+          }
+          self._applyTransform();
         }
 
-        if (!self.isDragging) {
-          var dir = self.opts.direction === "right" ? -1 : 1;
-          self.targetAngle += dir * self.opts.speed * 0.015;
+        // Active front card detection
+        const norm = ((-self.rotY % 360) + 360) % 360;
+        const frontIdx = Math.round(norm / self.angle) % self.count;
+        if (frontIdx !== self.activeIndex) {
+          self._highlightActive(frontIdx);
+          self._updateInfo(frontIdx);
         }
-        var diff = self.targetAngle - self.angle;
-        self.angle += diff * 0.1;
-        self._renderFrame();
 
         self.rafId = requestAnimationFrame(tick);
       }
@@ -169,81 +364,61 @@
       this.rafId = requestAnimationFrame(tick);
     }
 
-    _renderFrame() {
-      var n = this.count;
-      var r = this.radius;
-      var closestIdx = 0;
-      var closestDist = Infinity;
-      var self = this;
-
-      this.cardEls.forEach((el, i) => {
-        var base = parseFloat(el.dataset.baseAngle);
-        var deg = ((base + self.angle) % 360 + 360) % 360;
-        var rad = (deg * Math.PI) / 180;
-        var x = Math.sin(rad) * r;
-        var z = Math.cos(rad) * r;
-        var depthFactor = (z + r) / (2 * r);
-        var scale = 0.65 + 0.35 * depthFactor;
-        var zIndex = Math.round(depthFactor * 100);
-
-        el.style.transform = "translateX(" + x.toFixed(1) + "px) translateZ(" + z.toFixed(1) + "px) scale(" + scale.toFixed(2) + ")";
-        el.style.zIndex = zIndex;
-
-        var distToFront = deg > 180 ? 360 - deg : deg;
-        if (distToFront < closestDist) {
-          closestDist = distToFront;
-          closestIdx = i;
-        }
-      });
-
-      if (closestIdx !== this.activeIndex) {
-        if (this.activeIndex >= 0 && this.cardEls[this.activeIndex]) {
-          this.cardEls[this.activeIndex].style.boxShadow = "0 4px 16px rgba(0,0,0,.4)";
-        }
-        this.activeIndex = closestIdx;
-        if (this.cardEls[closestIdx]) {
-          this.cardEls[closestIdx].style.boxShadow = "0 0 28px 6px rgba(13,148,136,.5), 0 8px 32px rgba(0,0,0,.6)";
-        }
-        this._updateInfo(closestIdx);
+    _highlightActive(idx) {
+      if (this.activeIndex >= 0 && this.cards[this.activeIndex]) {
+        const prevFront = this.cards[this.activeIndex].front;
+        prevFront.style.borderColor = "rgba(144,174,173,0.3)";
+        prevFront.style.boxShadow = "0 10px 28px rgba(0,0,0,0.55)";
+      }
+      this.activeIndex = idx;
+      if (this.cards[idx]) {
+        const curFront = this.cards[idx].front;
+        curFront.style.borderColor = "#00dfa2";
+        curFront.style.boxShadow = "0 0 28px rgba(0,223,162,0.45), 0 12px 32px rgba(0,0,0,0.7)";
       }
     }
 
-    _updateInfo(idx) {
-      var item = this.items[idx];
+    _updateInfo(idx, immediate) {
+      const item = this.items[idx];
       if (!item) return;
-      var panel = this.infoPanel;
-      panel.style.opacity = "0";
-      setTimeout(function(){
-        var qual = item.qualification ? "<div class=\"rc-qualification\">" + item.qualification + (item.experience ? " &bull; " + item.experience : "") + "</div>" : "";
-        panel.innerHTML = "<div class=\"rc-name\">" + (item.name||"") + "</div><div class=\"rc-designation\">" + (item.designation||"") + "</div>" + qual;
+      const panel = this.infoPanel;
+
+      const render = () => {
+        let qualHtml = "";
+        if (item.qualification || item.experience) {
+          const qualText = item.qualification ? item.qualification : "";
+          const expText = item.experience ? item.experience + " Experience" : "";
+          const parts = [qualText, expText].filter(Boolean).join(" &bull; ");
+          qualHtml = "<div class=\"rc-info-meta\">" + parts + "</div>";
+        }
+
+        panel.innerHTML =
+          "<div class=\"rc-info-name\">" + (item.name || "") + "</div>" +
+          "<div class=\"rc-info-role\">" + (item.designation || "") + "</div>" +
+          qualHtml;
         panel.style.opacity = "1";
-      }, 120);
+      };
+
+      if (immediate) {
+        render();
+      } else {
+        panel.style.opacity = "0";
+        setTimeout(render, 110);
+      }
     }
 
-    _focusIndex(idx) {
-      var base = parseFloat(this.cardEls[idx].dataset.baseAngle);
-      var delta = -base - this.angle;
+    focusIndex(idx) {
+      const targetBase = -idx * this.angle;
+      let delta = targetBase - (this.rotY % 360);
       delta = ((delta % 360) + 540) % 360 - 180;
-      this.targetAngle += delta;
-    }
-
-    _attachEvents() {
-      if (!this.opts.drag) return;
-      var self = this;
-      var onStart = function(x){ self.isDragging=true; self.lastX=x; self.stage.style.cursor="grabbing"; };
-      var onMove  = function(x){ if(!self.isDragging) return; var dx=x-self.lastX; self.lastX=x; self.targetAngle -= dx*self.opts.sensitivity*0.4; };
-      var onEnd   = function(){ self.isDragging=false; self.stage.style.cursor="grab"; };
-      this.stage.addEventListener("mousedown", function(e){ onStart(e.clientX); });
-      window.addEventListener("mousemove",  function(e){ onMove(e.clientX); });
-      window.addEventListener("mouseup", onEnd);
-      this.stage.addEventListener("touchstart", function(e){ onStart(e.touches[0].clientX); }, {passive:true});
-      window.addEventListener("touchmove",  function(e){ onMove(e.touches[0].clientX); }, {passive:true});
-      window.addEventListener("touchend", onEnd);
+      this.targetRotY = this.rotY + delta;
+      this.vel = 0;
     }
 
     destroy() {
       if (this.rafId) cancelAnimationFrame(this.rafId);
       if (this.io) this.io.disconnect();
+      if (this.ro) this.ro.disconnect();
     }
   }
 

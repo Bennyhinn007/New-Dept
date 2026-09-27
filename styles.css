@@ -727,7 +727,6 @@ main {
     0 0 0 1px rgba(144, 174, 173, 0.12) inset;
   transition: transform var(--transition-smooth), box-shadow var(--transition-smooth), border-color var(--transition-smooth), background var(--transition-smooth);
   position: relative;
-  contain: content;
 }
 
 .section-block:hover {

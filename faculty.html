@@ -13,51 +13,53 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px 0 40px;
+      padding: 10px 0 20px;
       width: 100%;
-      overflow: hidden;
+      max-width: 100%;
+      position: relative;
+      overflow: visible;
     }
-    .rc-stage {
-      overflow: visible !important;
+    #faculty-carousel {
+      width: 100%;
+      max-width: 100%;
+      position: relative;
+      overflow: visible;
     }
-    .rc-card {
-      will-change: transform, filter;
-    }
-    /* Info panel below carousel */
     .rc-info-panel {
-      transition: opacity .3s ease;
+      transition: opacity .2s ease;
+      min-height: 72px;
     }
-    .rc-name {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #e2e8f0;
+    .rc-info-name {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #FBE9D0;
       letter-spacing: .5px;
       margin-bottom: 4px;
-      font-family: 'Inter', 'Outfit', sans-serif;
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
     }
-    .rc-designation {
-      font-size: .95rem;
-      color: #0d9488;
-      font-weight: 600;
-      margin-bottom: 3px;
+    .rc-info-role {
+      font-size: 1rem;
+      color: #00dfa2;
+      font-weight: 700;
+      margin-bottom: 5px;
       font-family: 'Inter', sans-serif;
     }
-    .rc-qualification {
-      font-size: .85rem;
-      color: #94a3b8;
+    .rc-info-meta {
+      font-size: 0.85rem;
+      color: #90AEAD;
       font-family: 'Inter', sans-serif;
     }
 
     /* ── Carousel navigation hint ──────────────────────── */
     .rc-hint {
-      font-size: .78rem;
-      color: #475569;
+      font-size: .8rem;
+      color: #90AEAD;
       margin-top: 14px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
-    .rc-hint svg { opacity: .7; }
+    .rc-hint svg { opacity: .8; stroke: #00dfa2; }
 
     /* Faculty profile cards grid below carousel */
     .faculty-grid {
@@ -67,54 +69,56 @@
       margin-top: 10px;
     }
     .faculty-profile-card {
-      background: rgba(13,148,136,.08);
-      border: 1px solid rgba(13,148,136,.18);
+      background: rgba(16, 28, 35, 0.7);
+      border: 1px solid rgba(144, 174, 173, 0.22);
       border-radius: 16px;
       padding: 20px 18px 18px;
-      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
       cursor: default;
     }
     .faculty-profile-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 0 24px rgba(13,148,136,.25);
-      border-color: rgba(13,148,136,.4);
+      box-shadow: 0 8px 30px rgba(0, 223, 162, 0.15), 0 0 0 1px rgba(0, 223, 162, 0.35);
+      border-color: rgba(0, 223, 162, 0.4);
     }
     .fpc-avatar {
-      width: 56px; height: 56px;
+      width: 54px; height: 54px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #0d9488, #ff6b6b);
+      background: linear-gradient(135deg, #0d9488, #E64833);
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.3rem; font-weight: 800; color: #fff;
+      font-size: 1.25rem; font-weight: 800; color: #fff;
       margin-bottom: 12px;
       flex-shrink: 0;
       font-family: 'Inter', sans-serif;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.35);
     }
     .fpc-name {
       font-size: 1rem;
       font-weight: 700;
-      color: #e2e8f0;
+      color: #FBE9D0;
       margin-bottom: 4px;
-      font-family: 'Inter', 'Outfit', sans-serif;
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
     }
     .fpc-role {
       font-size: .85rem;
-      color: #0d9488;
+      color: #00dfa2;
       font-weight: 600;
       margin-bottom: 6px;
     }
     .fpc-meta {
       font-size: .8rem;
-      color: #94a3b8;
+      color: #90AEAD;
       line-height: 1.55;
     }
     .fpc-meta span { display: block; }
 
     @media (max-width: 600px) {
-      .faculty-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-      .fpc-name { font-size: .9rem; }
-    }
-    @media (max-width: 400px) {
-      .faculty-grid { grid-template-columns: 1fr; }
+      .rc-info-name { font-size: 1.15rem; }
+      .rc-info-role { font-size: 0.88rem; }
+      .rc-info-meta { font-size: 0.78rem; }
+      .faculty-grid { grid-template-columns: 1fr; gap: 14px; }
+      .faculty-profile-card { padding: 16px 14px; }
+      .fpc-name { font-size: .95rem; }
     }
   </style>
 </head>
@@ -345,15 +349,12 @@
       var el = document.getElementById("faculty-carousel");
       if (el && window.RoundCarousel) {
         new RoundCarousel(el, FACULTY, {
-          imageWidth:  150,
-          imageHeight: 190,
-          spacing:     30,
-          speed:       0.35,
-          direction:   "right",
-          drag:        true,
-          sensitivity: 1.0,
-          perspective: 800,
-          cornerRadius: 20,
+          speed: 3.5,
+          direction: "right",
+          drag: true,
+          sensitivity: 3.5,
+          tilt: -7,
+          cornerRadius: 18,
         });
       }
     });
