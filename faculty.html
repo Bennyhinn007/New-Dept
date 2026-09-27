@@ -1,11 +1,122 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Faculty - Department of Computer Science and Engineering (IoT, Cybersecurity including Blockchain Technology)</title>
+  <title>Faculty - Department of CSE (IoT, Cybersecurity including Blockchain Technology)</title>
+  <meta name="description" content="Meet the faculty of the Department of Computer Science and Engineering (IoT, Cybersecurity including Blockchain Technology) at GNDEC Bidar.">
   <link rel="icon" type="image/png" href="images/dept_logo_transparent.png">
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── Round Carousel Section ──────────────────────────── */
+    .rc-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 0 40px;
+      width: 100%;
+      overflow: hidden;
+    }
+    .rc-stage {
+      overflow: visible !important;
+    }
+    .rc-card {
+      will-change: transform, filter;
+    }
+    /* Info panel below carousel */
+    .rc-info-panel {
+      transition: opacity .3s ease;
+    }
+    .rc-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      letter-spacing: .5px;
+      margin-bottom: 4px;
+      font-family: 'Inter', 'Outfit', sans-serif;
+    }
+    .rc-designation {
+      font-size: .95rem;
+      color: #0d9488;
+      font-weight: 600;
+      margin-bottom: 3px;
+      font-family: 'Inter', sans-serif;
+    }
+    .rc-qualification {
+      font-size: .85rem;
+      color: #94a3b8;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ── Carousel navigation hint ──────────────────────── */
+    .rc-hint {
+      font-size: .78rem;
+      color: #475569;
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .rc-hint svg { opacity: .7; }
+
+    /* Faculty profile cards grid below carousel */
+    .faculty-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 20px;
+      margin-top: 10px;
+    }
+    .faculty-profile-card {
+      background: rgba(13,148,136,.08);
+      border: 1px solid rgba(13,148,136,.18);
+      border-radius: 16px;
+      padding: 20px 18px 18px;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+      cursor: default;
+    }
+    .faculty-profile-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 24px rgba(13,148,136,.25);
+      border-color: rgba(13,148,136,.4);
+    }
+    .fpc-avatar {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0d9488, #ff6b6b);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; font-weight: 800; color: #fff;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+      font-family: 'Inter', sans-serif;
+    }
+    .fpc-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 4px;
+      font-family: 'Inter', 'Outfit', sans-serif;
+    }
+    .fpc-role {
+      font-size: .85rem;
+      color: #0d9488;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .fpc-meta {
+      font-size: .8rem;
+      color: #94a3b8;
+      line-height: 1.55;
+    }
+    .fpc-meta span { display: block; }
+
+    @media (max-width: 600px) {
+      .faculty-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .fpc-name { font-size: .9rem; }
+    }
+    @media (max-width: 400px) {
+      .faculty-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
   <!-- Singularity Background Canvas & Atmosphere -->
@@ -26,7 +137,7 @@
         <div class="header-actions">
           <div class="header-badge">
             <span class="pulse-dot"></span>
-            <span>NAAC A+ &bull; VTU & AICTE Approved</span>
+            <span>NAAC A+ &bull; VTU &amp; AICTE Approved</span>
           </div>
           <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation menu" aria-expanded="false">
             <span class="hamburger-line"></span>
@@ -49,7 +160,7 @@
         <div class="mobile-drawer-footer">
           <div class="mobile-drawer-badge">
             <span class="pulse-dot"></span>
-            <span>NAAC A+ &bull; VTU & AICTE Approved</span>
+            <span>NAAC A+ &bull; VTU &amp; AICTE Approved</span>
           </div>
         </div>
       </nav>
@@ -70,17 +181,140 @@
   <!-- Main Content -->
   <main>
     <div class="container">
-      <!-- Faculty Table -->
-      <section class="section-block">
-        <h3>Faculty Directory Table</h3>
-        <p>Complete official directory of teaching faculty and instructors in the department:</p>
 
+      <!-- Round Carousel -->
+      <section class="section-block">
+        <h3>Meet Our Faculty</h3>
+        <p>Drag or click any card to explore our faculty members. The front card's details are shown below.</p>
+        <div class="rc-wrapper">
+          <div id="faculty-carousel"></div>
+          <p class="rc-hint">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            Drag to spin &nbsp;&bull;&nbsp; Click a card to focus
+          </p>
+        </div>
+      </section>
+
+      <!-- Faculty Directory Grid -->
+      <section class="section-block">
+        <h3>Faculty Directory</h3>
+        <p>All faculty members of the department at a glance:</p>
+        <div class="faculty-grid">
+
+          <div class="faculty-profile-card">
+            <div class="fpc-avatar">HJ</div>
+            <div class="fpc-name">Dr. Harish Joshi</div>
+            <div class="fpc-role">Professor &amp; HOD</div>
+            <div class="fpc-meta">
+              <span>&#127891; Ph.D</span>
+              <span>&#9200; 15 Years Experience</span>
+            </div>
+          </div>
+
+          <div class="faculty-profile-card">
+            <div class="fpc-avatar">MJ</div>
+            <div class="fpc-name">Madhuri Joshi</div>
+            <div class="fpc-role">Assistant Professor</div>
+            <div class="fpc-meta">
+              <span>&#127891; M.Tech</span>
+              <span>&#9200; 2 Years Experience</span>
+            </div>
+          </div>
+
+          <div class="faculty-profile-card">
+            <div class="fpc-avatar">UK</div>
+            <div class="fpc-name">Miss. Uzma Kausar</div>
+            <div class="fpc-role">Assistant Professor</div>
+            <div class="fpc-meta">
+              <span>&#127891; M.Tech</span>
+              <span>&#9200; 2 Years Experience</span>
+            </div>
+          </div>
+
+          <div class="faculty-profile-card">
+            <div class="fpc-avatar">AB</div>
+            <div class="fpc-name">Mr. Ashok Bawge</div>
+            <div class="fpc-role">Assistant Professor</div>
+            <div class="fpc-meta">
+              <span>&#127891; M.Tech</span>
+              <span>&#9200; 9 Years Experience</span>
+            </div>
+          </div>
+
+          <div class="faculty-profile-card">
+            <div class="fpc-avatar">MH</div>
+            <div class="fpc-name">Mr. Mahesh</div>
+            <div class="fpc-role">Assistant Professor</div>
+            <div class="fpc-meta">
+              <span>&#127891; M.Tech</span>
+            </div>
+          </div>
+
+          <div class="faculty-profile-card">
+            <div class="fpc-avatar">PP</div>
+            <div class="fpc-name">Mr. Pandit Patil</div>
+            <div class="fpc-role">Assistant Professor</div>
+            <div class="fpc-meta">
+              <span>&#127891; M.Tech</span>
+            </div>
+          </div>
+
+          <div class="faculty-profile-card">
+            <div class="fpc-avatar">IZ</div>
+            <div class="fpc-name">Mrs. Ibtesham Zarrine</div>
+            <div class="fpc-role">Assistant Professor</div>
+            <div class="fpc-meta">
+              <span>&#127891; M.Tech</span>
+            </div>
+          </div>
+
+          <div class="faculty-profile-card">
+            <div class="fpc-avatar">FA</div>
+            <div class="fpc-name">Miss Farhanaaz</div>
+            <div class="fpc-role">Assistant Professor</div>
+            <div class="fpc-meta">
+              <span>&#127891; M.Tech</span>
+            </div>
+          </div>
+
+          <div class="faculty-profile-card">
+            <div class="fpc-avatar">AR</div>
+            <div class="fpc-name">Arati</div>
+            <div class="fpc-role">Assistant Professor</div>
+            <div class="fpc-meta">
+              <span>&#127891; M.Tech</span>
+            </div>
+          </div>
+
+          <div class="faculty-profile-card">
+            <div class="fpc-avatar">AN</div>
+            <div class="fpc-name">Anand</div>
+            <div class="fpc-role">Assistant Professor</div>
+            <div class="fpc-meta">
+              <span>&#127891; M.Tech</span>
+            </div>
+          </div>
+
+          <div class="faculty-profile-card">
+            <div class="fpc-avatar">PR</div>
+            <div class="fpc-name">Miss Preeti</div>
+            <div class="fpc-role">Instructor</div>
+            <div class="fpc-meta"></div>
+          </div>
+
+        </div><!-- /.faculty-grid -->
+      </section>
+
+      <!-- Official Directory Table (kept for record) -->
+      <section class="section-block">
+        <h3>Official Directory Table</h3>
+        <p>Complete official directory as per department records:</p>
         <div class="table-responsive">
           <div class="table-scroll-hint"><span>Swipe horizontally to view full table &rarr;</span></div>
           <table class="data-table">
             <thead>
               <tr>
-                <th style="width: 50px;">Sl. No.</th>
+                <th style="width:50px;">Sl. No.</th>
                 <th>Faculty Name</th>
                 <th>Designation</th>
                 <th>Qualification</th>
@@ -88,173 +322,22 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td><strong>Dr. Harish Joshi</strong></td>
-                <td>Professor & HOD</td>
-                <td>Ph.D</td>
-                <td>15 Years</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td><strong>Madhuri Joshi</strong></td>
-                <td>Assistant Professor</td>
-                <td>M.Tech</td>
-                <td>2 Years</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td><strong>Miss. Uzma Kausar</strong></td>
-                <td>Assistant Professor</td>
-                <td>M.Tech</td>
-                <td>2 Years</td>
-              </tr>
-              <tr>
-                <td>4</td>
-                <td><strong>Mr. Ashok Bawge</strong></td>
-                <td>Assistant Professor</td>
-                <td>M.Tech</td>
-                <td>9 Years</td>
-              </tr>
-              <tr>
-                <td>5</td>
-                <td><strong>Mr. Mahesh</strong></td>
-                <td>Assistant Professor</td>
-                <td>M.Tech</td>
-                <td>&mdash;</td>
-              </tr>
-              <tr>
-                <td>6</td>
-                <td><strong>Mr. Pandit Patil</strong></td>
-                <td>Assistant Professor</td>
-                <td>M.Tech</td>
-                <td>&mdash;</td>
-              </tr>
-              <tr>
-                <td>7</td>
-                <td><strong>Mrs. Ibtesham Zarrine</strong></td>
-                <td>Assistant Professor</td>
-                <td>M.Tech</td>
-                <td>&mdash;</td>
-              </tr>
-              <tr>
-                <td>8</td>
-                <td><strong>Miss Farhanaaz</strong></td>
-                <td>Assistant Professor</td>
-                <td>M.Tech</td>
-                <td>&mdash;</td>
-              </tr>
-              <tr>
-                <td>9</td>
-                <td><strong>Arati</strong></td>
-                <td>Assistant Professor</td>
-                <td>M.Tech</td>
-                <td>&mdash;</td>
-              </tr>
-              <tr>
-                <td>10</td>
-                <td><strong>Anand</strong></td>
-                <td>Assistant Professor</td>
-                <td>M.Tech</td>
-                <td>&mdash;</td>
-              </tr>
-              <tr>
-                <td>11</td>
-                <td><strong>Miss Preeti</strong></td>
-                <td>Instructor</td>
-                <td>&mdash;</td>
-                <td>&mdash;</td>
-              </tr>
+              <tr><td>1</td><td><strong>Dr. Harish Joshi</strong></td><td>Professor &amp; HOD</td><td>Ph.D</td><td>15 Years</td></tr>
+              <tr><td>2</td><td><strong>Madhuri Joshi</strong></td><td>Assistant Professor</td><td>M.Tech</td><td>2 Years</td></tr>
+              <tr><td>3</td><td><strong>Miss. Uzma Kausar</strong></td><td>Assistant Professor</td><td>M.Tech</td><td>2 Years</td></tr>
+              <tr><td>4</td><td><strong>Mr. Ashok Bawge</strong></td><td>Assistant Professor</td><td>M.Tech</td><td>9 Years</td></tr>
+              <tr><td>5</td><td><strong>Mr. Mahesh</strong></td><td>Assistant Professor</td><td>M.Tech</td><td>&mdash;</td></tr>
+              <tr><td>6</td><td><strong>Mr. Pandit Patil</strong></td><td>Assistant Professor</td><td>M.Tech</td><td>&mdash;</td></tr>
+              <tr><td>7</td><td><strong>Mrs. Ibtesham Zarrine</strong></td><td>Assistant Professor</td><td>M.Tech</td><td>&mdash;</td></tr>
+              <tr><td>8</td><td><strong>Miss Farhanaaz</strong></td><td>Assistant Professor</td><td>M.Tech</td><td>&mdash;</td></tr>
+              <tr><td>9</td><td><strong>Arati</strong></td><td>Assistant Professor</td><td>M.Tech</td><td>&mdash;</td></tr>
+              <tr><td>10</td><td><strong>Anand</strong></td><td>Assistant Professor</td><td>M.Tech</td><td>&mdash;</td></tr>
+              <tr><td>11</td><td><strong>Miss Preeti</strong></td><td>Instructor</td><td>&mdash;</td><td>&mdash;</td></tr>
             </tbody>
           </table>
         </div>
       </section>
 
-      <!-- Faculty Cards Grid -->
-      <section class="section-block">
-        <h3>Faculty Profiles</h3>
-        <div class="grid-3">
-          <!-- 1. Dr. Harish Joshi -->
-          <div class="item-card">
-            <h4>Dr. Harish Joshi</h4>
-            <p><strong>Designation:</strong> Professor & HOD</p>
-            <p><strong>Qualification:</strong> Ph.D</p>
-            <p><strong>Experience:</strong> 15 Years</p>
-          </div>
-
-          <!-- 2. Madhuri Joshi -->
-          <div class="item-card">
-            <h4>Madhuri Joshi</h4>
-            <p><strong>Designation:</strong> Assistant Professor</p>
-            <p><strong>Qualification:</strong> M.Tech</p>
-            <p><strong>Experience:</strong> 2 Years</p>
-          </div>
-
-          <!-- 3. Miss. Uzma Kausar -->
-          <div class="item-card">
-            <h4>Miss. Uzma Kausar</h4>
-            <p><strong>Designation:</strong> Assistant Professor</p>
-            <p><strong>Qualification:</strong> M.Tech</p>
-            <p><strong>Experience:</strong> 2 Years</p>
-          </div>
-
-          <!-- 4. Mr. Ashok Bawge -->
-          <div class="item-card">
-            <h4>Mr. Ashok Bawge</h4>
-            <p><strong>Designation:</strong> Assistant Professor</p>
-            <p><strong>Qualification:</strong> M.Tech</p>
-            <p><strong>Experience:</strong> 9 Years</p>
-          </div>
-
-          <!-- 5. Mr. Mahesh -->
-          <div class="item-card">
-            <h4>Mr. Mahesh</h4>
-            <p><strong>Designation:</strong> Assistant Professor</p>
-            <p><strong>Qualification:</strong> M.Tech</p>
-          </div>
-
-          <!-- 6. Mr. Pandit Patil -->
-          <div class="item-card">
-            <h4>Mr. Pandit Patil</h4>
-            <p><strong>Designation:</strong> Assistant Professor</p>
-            <p><strong>Qualification:</strong> M.Tech</p>
-          </div>
-
-          <!-- 7. Mrs Ibtesham Zarrine -->
-          <div class="item-card">
-            <h4>Mrs. Ibtesham Zarrine</h4>
-            <p><strong>Designation:</strong> Assistant Professor</p>
-            <p><strong>Qualification:</strong> M.Tech</p>
-          </div>
-
-          <!-- 8. Miss Farhanaaz -->
-          <div class="item-card">
-            <h4>Miss Farhanaaz</h4>
-            <p><strong>Designation:</strong> Assistant Professor</p>
-            <p><strong>Qualification:</strong> M.Tech</p>
-          </div>
-
-          <!-- 9. Arati -->
-          <div class="item-card">
-            <h4>Arati</h4>
-            <p><strong>Designation:</strong> Assistant Professor</p>
-            <p><strong>Qualification:</strong> M.Tech</p>
-          </div>
-
-          <!-- 10. Anand -->
-          <div class="item-card">
-            <h4>Anand</h4>
-            <p><strong>Designation:</strong> Assistant Professor</p>
-            <p><strong>Qualification:</strong> M.Tech</p>
-          </div>
-
-          <!-- 11. Miss Preeti -->
-          <div class="item-card">
-            <h4>Miss Preeti</h4>
-            <p><strong>Designation:</strong> Instructor</p>
-          </div>
-        </div>
-      </section>
     </div>
   </main>
 
@@ -263,9 +346,9 @@
     <div class="container">
       <div class="footer-content">
         <img src="images/gndec_logo.png" alt="Guru Nanak Dev Engineering College Logo" class="footer-logo" title="GNDEC Bidar">
-        <img src="images/dept_logo_transparent.png" alt="Department of CSE Logo" class="footer-logo" title="Department of CSE (IoT & Cybersecurity)">
+        <img src="images/dept_logo_transparent.png" alt="Department of CSE Logo" class="footer-logo" title="Department of CSE (IoT &amp; Cybersecurity)">
         <p>&copy; Department of CSE (IoT and Cybersecurity Including Blockchain Technology)<br>
-        Guru Nanak Dev Engineering College, Bidar &bull; NAAC A+ Standard &bull; VTU & AICTE Approved</p>
+        Guru Nanak Dev Engineering College, Bidar &bull; NAAC A+ Standard &bull; VTU &amp; AICTE Approved</p>
       </div>
     </div>
   </footer>
@@ -274,5 +357,39 @@
   <script src="singularity-bg.js"></script>
   <script src="continuous-tabs.js"></script>
   <script src="weight-hover.js"></script>
+  <script src="round-carousel.js"></script>
+  <script>
+    // Faculty data — no photos yet, so we use initials avatars
+    var FACULTY = [
+      { name: "Dr. Harish Joshi",       designation: "Professor & HOD",      qualification: "Ph.D",   experience: "15 Years" },
+      { name: "Madhuri Joshi",           designation: "Assistant Professor",   qualification: "M.Tech", experience: "2 Years"  },
+      { name: "Miss. Uzma Kausar",       designation: "Assistant Professor",   qualification: "M.Tech", experience: "2 Years"  },
+      { name: "Mr. Ashok Bawge",         designation: "Assistant Professor",   qualification: "M.Tech", experience: "9 Years"  },
+      { name: "Mr. Mahesh",              designation: "Assistant Professor",   qualification: "M.Tech"                          },
+      { name: "Mr. Pandit Patil",        designation: "Assistant Professor",   qualification: "M.Tech"                          },
+      { name: "Mrs. Ibtesham Zarrine",   designation: "Assistant Professor",   qualification: "M.Tech"                          },
+      { name: "Miss Farhanaaz",          designation: "Assistant Professor",   qualification: "M.Tech"                          },
+      { name: "Arati",                   designation: "Assistant Professor",   qualification: "M.Tech"                          },
+      { name: "Anand",                   designation: "Assistant Professor",   qualification: "M.Tech"                          },
+      { name: "Miss Preeti",             designation: "Instructor"                                                               },
+    ];
+
+    document.addEventListener("DOMContentLoaded", function () {
+      var el = document.getElementById("faculty-carousel");
+      if (el && window.RoundCarousel) {
+        new RoundCarousel(el, FACULTY, {
+          imageWidth:  150,
+          imageHeight: 190,
+          spacing:     30,
+          speed:       0.35,
+          direction:   "right",
+          drag:        true,
+          sensitivity: 1.0,
+          perspective: 800,
+          cornerRadius: 20,
+        });
+      }
+    });
+  </script>
 </body>
 </html>
