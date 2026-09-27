@@ -11,8 +11,25 @@
    • Muted Sage:        #90AEAD (Secondary tone for borders, subheaders, badges, table accents)
    • Warm Cream:        #FBE9D0 (Dominant light tone for text, headings, contrast elements)
    ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+/* ==========================================================================
+   ORIGINKIT INTER VARIABLE FONT FOR WEIGHT HOVER
+   ========================================================================== */
+@font-face {
+  font-family: "InterVariableFramer";
+  src: url("https://rsms.me/inter/font-files/InterVariable.woff2?v=4.0") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "InterVariableFramer";
+  src: url("https://rsms.me/inter/font-files/InterVariable-Italic.woff2?v=4.0") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
 
 :root {
   /* True Deep Black Space Foundation */
@@ -482,6 +499,58 @@ nav ul li {
   font-size: 1.05rem;
   color: rgba(251, 233, 208, 0.88);
   line-height: 1.6;
+}
+
+/* ==========================================================================
+   WEIGHT HOVER — ORIGINKIT COMPONENT STYLES
+   ========================================================================== */
+.weight-hover-active {
+  cursor: pointer;
+  user-select: text;
+  -webkit-user-select: text;
+  transition: text-shadow var(--transition-smooth);
+}
+
+.weight-hover-content {
+  font-family: "InterVariableFramer", "Inter Variable", "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  display: inline;
+}
+
+.weight-hover-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.weight-hover-letter {
+  display: inline-block;
+  white-space: pre;
+  will-change: font-variation-settings, font-weight;
+  transition-property: font-variation-settings, font-weight, color, text-shadow;
+  transition-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.weight-hover-space {
+  display: inline-block;
+  white-space: pre;
+}
+
+/* Glow effects on weight hover */
+.page-hero h2.weight-hover-active:hover .weight-hover-letter,
+.page-hero h2.weight-hover-active:focus-within .weight-hover-letter {
+  text-shadow: 0 0 18px rgba(251, 233, 208, 0.4), 0 0 35px rgba(230, 72, 51, 0.25);
+  color: #FFFFFF;
+}
+
+.page-hero p.weight-hover-active:hover .weight-hover-letter,
+.page-hero p.weight-hover-active:focus-within .weight-hover-letter {
+  color: #FFFFFF;
+  text-shadow: 0 0 14px rgba(144, 174, 173, 0.5);
+}
+
+.header-brand h1.weight-hover-active:hover .weight-hover-letter,
+.header-brand h2.weight-hover-active:hover .weight-hover-letter {
+  color: #FFFFFF;
+  text-shadow: 0 0 12px rgba(251, 233, 208, 0.45);
 }
 
 /* ==========================================================================
