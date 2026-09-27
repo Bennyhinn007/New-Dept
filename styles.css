@@ -1732,15 +1732,15 @@ footer p {
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(5, 8, 10, 0.12) 0%,
-    transparent 35%,
-    rgba(5, 8, 10, 0.65) 70%,
-    rgba(5, 8, 10, 0.95) 100%
+    transparent 65%,
+    rgba(5, 8, 10, 0.35) 85%,
+    rgba(5, 8, 10, 0.75) 100%
   );
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 2.2rem 2.4rem;
+  align-items: flex-end;
+  padding: 1.4rem 1.6rem;
   pointer-events: none;
 }
 
