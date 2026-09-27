@@ -1645,3 +1645,333 @@ footer p {
   border-color: var(--color-coral-red);
   transform: translateX(2px);
 }
+
+/* ==========================================================================
+   ORIGINKIT FLIP GALLERY COMPONENT (3D Double-Sided Interactive Card)
+   ========================================================================== */
+.flip-gallery-section {
+  position: relative;
+  width: 100%;
+}
+
+.flip-gallery-container {
+  position: relative;
+  width: 100%;
+  max-width: 860px;
+  margin: 1.5rem auto 0;
+  perspective: 1100px;
+  -webkit-perspective: 1100px;
+  cursor: pointer;
+  outline: none;
+  border-radius: 24px;
+}
+
+.flip-gallery-container:focus-visible {
+  box-shadow: 0 0 0 3px var(--color-coral-red), 0 0 30px rgba(230, 72, 51, 0.5);
+}
+
+.flip-tilt-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 520px;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+  border-radius: 24px;
+}
+
+.flip-card-rotator {
+  position: relative;
+  width: 100%;
+  min-height: 520px;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.34, 1.35, 0.64, 1);
+  border-radius: 24px;
+}
+
+.flip-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 24px;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(144, 174, 173, 0.25);
+  box-sizing: border-box;
+}
+
+/* Front Face: HOD Photograph Showcase */
+.flip-face-front {
+  background: #081015;
+  z-index: 2;
+  transform: rotateY(0deg);
+}
+
+.flip-front-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  display: block;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.flip-gallery-container:hover .flip-front-img {
+  transform: scale(1.025);
+}
+
+.flip-front-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 8, 10, 0.12) 0%,
+    transparent 35%,
+    rgba(5, 8, 10, 0.65) 70%,
+    rgba(5, 8, 10, 0.95) 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 2.2rem 2.4rem;
+  pointer-events: none;
+}
+
+.flip-front-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(36, 72, 85, 0.88);
+  border: 1px solid var(--color-coral-red);
+  color: var(--color-warm-cream);
+  padding: 4px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+  width: fit-content;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
+.flip-front-name {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 4px;
+  font-family: var(--font-heading);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.85);
+  letter-spacing: -0.01em;
+}
+
+.flip-front-role {
+  font-size: 0.98rem;
+  color: var(--color-warm-cream);
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
+}
+
+.flip-action-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(10, 18, 24, 0.94);
+  border: 1px solid rgba(0, 223, 162, 0.5);
+  color: #00dfa2;
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 700;
+  width: fit-content;
+  box-shadow: 0 6px 20px rgba(0, 223, 162, 0.25);
+  pointer-events: auto;
+  transition: all var(--transition-fast);
+  letter-spacing: 0.02em;
+}
+
+.flip-gallery-container:hover .flip-action-hint {
+  background: #00dfa2;
+  color: #05080a;
+  box-shadow: 0 8px 28px rgba(0, 223, 162, 0.55);
+  transform: translateY(-2px);
+}
+
+/* Back Face: Message from HoD Desk */
+.flip-face-back {
+  background: linear-gradient(145deg, rgba(16, 28, 36, 0.98) 0%, rgba(8, 14, 18, 0.99) 100%);
+  border: 1px solid rgba(0, 223, 162, 0.35);
+  transform: rotateY(180deg);
+  padding: 2.2rem 2.4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow-y: auto;
+  box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.92), inset 0 0 50px rgba(13, 148, 136, 0.14);
+}
+
+.flip-back-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid rgba(144, 174, 173, 0.22);
+}
+
+.flip-back-avatar {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 20%;
+  border: 2px solid var(--color-coral-red);
+  box-shadow: 0 0 18px rgba(230, 72, 51, 0.45);
+  flex-shrink: 0;
+}
+
+.flip-back-title-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.flip-back-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-coral-red);
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 2px;
+}
+
+.flip-back-name {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--color-warm-cream);
+  line-height: 1.25;
+  font-family: var(--font-heading);
+}
+
+.flip-back-role {
+  font-size: 0.88rem;
+  color: #00dfa2;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.flip-back-dept {
+  font-size: 0.8rem;
+  color: var(--color-muted-sage);
+  line-height: 1.35;
+  margin-top: 2px;
+}
+
+.flip-back-body {
+  margin: 1.15rem 0;
+  flex: 1;
+}
+
+.flip-back-message-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-warm-cream);
+  margin-bottom: 0.75rem;
+  font-family: var(--font-heading);
+}
+
+.flip-back-quote {
+  background: rgba(22, 42, 50, 0.5);
+  border-left: 4px solid var(--color-coral-red);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 1.15rem 1.45rem;
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-warm-cream);
+  line-height: 1.72;
+  font-style: italic;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.flip-back-quote-author {
+  display: block;
+  text-align: right;
+  font-weight: 700;
+  font-style: normal;
+  color: #00dfa2;
+  margin-top: 0.75rem;
+  font-size: 0.88rem;
+}
+
+.flip-back-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(144, 174, 173, 0.15);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.flip-back-badge {
+  font-size: 0.76rem;
+  color: var(--color-muted-sage);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Mobile Responsiveness for Flip Gallery */
+@media (max-width: 768px) {
+  .flip-tilt-wrapper,
+  .flip-card-rotator {
+    min-height: 580px;
+  }
+  .flip-front-overlay {
+    padding: 1.5rem 1.25rem;
+  }
+  .flip-front-name {
+    font-size: 1.35rem;
+  }
+  .flip-front-role {
+    font-size: 0.86rem;
+    margin-bottom: 0.9rem;
+  }
+  .flip-face-back {
+    padding: 1.4rem 1.2rem;
+  }
+  .flip-back-avatar {
+    width: 52px;
+    height: 52px;
+  }
+  .flip-back-name {
+    font-size: 1.15rem;
+  }
+  .flip-back-role {
+    font-size: 0.82rem;
+  }
+  .flip-back-dept {
+    font-size: 0.75rem;
+  }
+  .flip-back-quote {
+    padding: 0.9rem 1.1rem;
+    font-size: 0.86rem;
+    line-height: 1.6;
+  }
+  .flip-back-footer {
+    padding-top: 0.65rem;
+  }
+}
+

@@ -98,8 +98,26 @@
           const img = document.createElement("img");
           img.src = item.src;
           img.alt = item.name || "";
-          img.style.cssText = "width:100%;height:100%;object-fit:cover;position:absolute;inset:0;pointer-events:none;border-radius:" + self.opts.cornerRadius + "px;";
+          img.style.cssText = "width:100%;height:100%;object-fit:cover;object-position:center 20%;position:absolute;inset:0;pointer-events:none;border-radius:" + self.opts.cornerRadius + "px;";
           front.appendChild(img);
+
+          // Dark gradient vignette overlay with name & designation
+          const overlay = document.createElement("div");
+          overlay.style.cssText = "position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(5,8,10,0.65) 70%,rgba(5,8,10,0.95) 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:8px 6px;text-align:center;pointer-events:none;border-radius:" + self.opts.cornerRadius + "px;";
+
+          const nameEl = document.createElement("div");
+          nameEl.className = "rc-card-name";
+          nameEl.textContent = item.name;
+          nameEl.style.cssText = "font-size:0.82rem;font-weight:700;color:#FBE9D0;line-height:1.2;margin-bottom:2px;font-family:Plus Jakarta Sans,Inter,sans-serif;pointer-events:none;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-shadow:0 1px 4px rgba(0,0,0,0.8);";
+          overlay.appendChild(nameEl);
+
+          const roleEl = document.createElement("div");
+          roleEl.className = "rc-card-role";
+          roleEl.textContent = item.designation || "";
+          roleEl.style.cssText = "font-size:0.7rem;color:#00dfa2;font-weight:600;line-height:1.2;font-family:Inter,sans-serif;pointer-events:none;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,0.8);";
+          overlay.appendChild(roleEl);
+
+          front.appendChild(overlay);
         } else {
           // Initials Avatar Circle
           const avatar = document.createElement("div");
